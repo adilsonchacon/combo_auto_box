@@ -1,0 +1,6 @@
+mysql2:
+  adapter: mysql2
+  database: combo_auto_box
+  username: root
+  password: aidentro!
+  encoding: utf8

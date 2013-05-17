@@ -1,0 +1,8 @@
+programmer:
+  label: "Programmer"
+  salary: 1000
+  
+manager:
+  label: "Manager"
+  salary: 2000
+
