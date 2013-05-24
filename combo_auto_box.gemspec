@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.date = Time.now
 
   s.files = Dir["{lib,vendor}/**/*"]
-  s.test_files = `git ls-files -- spec/`.split("\n")
+  s.test_files = `git ls-files -- spec/`.split("\n") + `git ls-files -- test/`.split("\n")
   s.require_paths = ["lib"]
 
   s.add_dependency("activesupport", ["~> 3.2"])

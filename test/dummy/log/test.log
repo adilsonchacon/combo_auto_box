@@ -1,0 +1,22 @@
+Started GET "/assets/moment.js" for 127.0.0.1 at 2013-05-24 10:36:57 -0300
+Served asset /moment.js - 404 Not Found (2ms)
+Started GET "/assets/moment/fr.js" for 127.0.0.1 at 2013-05-24 10:36:57 -0300
+Served asset /moment/fr.js - 404 Not Found (2ms)
+Started GET "/assets/moment.js" for 127.0.0.1 at 2013-05-24 10:36:57 -0300
+Served asset /moment.js - 404 Not Found (1ms)
+Started GET "/assets/combo-auto-box.js" for 127.0.0.1 at 2013-05-24 10:39:15 -0300
+Compiled combo-auto-box.js  (1ms)  (pid 1046)
+Served asset /combo-auto-box.js - 200 OK (62ms)
+Started GET "/assets/combo_auto_box_expand.png" for 127.0.0.1 at 2013-05-24 10:40:26 -0300
+Served asset /combo_auto_box_expand.png - 200 OK (42ms)
+Started GET "/assets/combo-auto-box.js" for 127.0.0.1 at 2013-05-24 10:40:26 -0300
+Served asset /combo-auto-box.js - 200 OK (24ms)
+Started GET "/assets/combo-auto-box.css" for 127.0.0.1 at 2013-05-24 10:40:26 -0300
+Compiled combo-auto-box.css  (0ms)  (pid 1072)
+Served asset /combo-auto-box.css - 200 OK (29ms)
+Started GET "/assets/combo_auto_box_expand.png" for 127.0.0.1 at 2013-05-24 15:49:37 -0300
+Served asset /combo_auto_box_expand.png - 200 OK (16ms)
+Started GET "/assets/combo-auto-box.js" for 127.0.0.1 at 2013-05-24 15:49:38 -0300
+Served asset /combo-auto-box.js - 200 OK (2ms)
+Started GET "/assets/combo-auto-box.css" for 127.0.0.1 at 2013-05-24 15:49:38 -0300
+Served asset /combo-auto-box.css - 200 OK (2ms)
