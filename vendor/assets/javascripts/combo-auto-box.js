@@ -1,7 +1,7 @@
 var ComboAutoBox = {
 	// constructor
     addTo: function (container, options) {
-	
+		
 		// generatea an ID based on current time
 		var generateAnId = function(prefix) {
 			var now = new Date().getTime();;
@@ -25,11 +25,7 @@ var ComboAutoBox = {
 			});
 						
 			$('#' + inputId).autocomplete({
-				source: function(request, response) {
-					var term = 'term=' + $('#' + inputId).val();
-					var params = (options.data == null) ? term : options.data + '&' + term;
-					return $.getJSON(options.source + '?' + params, response);
-				},
+				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
 					if (options.type == 'simple') {
 						return selectData(ui.item.id);
@@ -38,6 +34,19 @@ var ComboAutoBox = {
 					}
 				}
 			});
+		};
+		
+		// set autocomplete source
+		var setAutoCompleteSource = function (inputId) {
+			if (typeof options.source == 'string') {
+				return function(request, response) {
+					var term = 'term=' + $('#' + inputId).val();
+					var params = (options.data == null) ? term : options.data + '&' + term;
+					return $.getJSON(options.source + '?' + params, response);
+				};
+			} else {
+				return options.source;
+			}
 		};
 		
 		// generates text field with html options
@@ -74,8 +83,6 @@ var ComboAutoBox = {
 				$('#' + modalDialogId).dialog('close');
 			});
 
-			getListForModalDialog(modalDialogId);
-
 			$('#' + modalDialogId).dialog({
 				width: 400,
 				height: 400,
@@ -83,6 +90,8 @@ var ComboAutoBox = {
 				closeOnEscape: true,
 				autoOpen: false,
 			});
+
+			getListForModalDialog(modalDialogId);
 			
 			$("#" + modalDialogId).siblings('div.ui-dialog-titlebar').remove();
 			
@@ -99,22 +108,33 @@ var ComboAutoBox = {
 		
 		// generates list for modal dialog
 		var getListForModalDialog = function (modalDialogId) {
-			var term = 'term=';
-			var params = (options.data == null) ? term : options.data + '&' + term;
-			var items = [];
+			if (typeof options.source == 'string') {
+				var term = 'term=';
+				var params = (options.data == null) ? term : options.data + '&' + term;
 
-			$.getJSON(options.source + '?' + params, function(data) {
-				$.each(data, function(index){
-					items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
+				$.getJSON(options.source + '?' + params, function(data) {
+					setListForModalDialog(modalDialogId, data);
 				});
-				$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 65) + 'px');
-				$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
-				$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
-					$('#' + modalDialogId).dialog('close');
-					$('#' + container + ' > div.container-combo-auto-box > input').val($(this).children('span.combo-auto-box-item-label').text());
-					selectData($(this).children('span.combo-auto-box-item-id').text());
-				});
+			} else {
+				setListForModalDialog(modalDialogId, options.source);
+			}
+		};
+		
+		// set list for modal dialog
+		var setListForModalDialog = function (modalDialogId, data) {
+			var items = [];
+			
+			$.each(data, function(index){
+				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
 			});
+			
+			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 65) + 'px');
+			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
+			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
+				$('#' + modalDialogId).dialog('close');
+				$('#' + container + ' > div.container-combo-auto-box > input').val($(this).children('span.combo-auto-box-item-label').text());
+				selectData($(this).children('span.combo-auto-box-item-id').text());
+			});			
 		};
 
 		// opens modal dialog
@@ -130,14 +150,14 @@ var ComboAutoBox = {
 			spanTag.css('margin', '2px 0px 0px ' + (textField.width() + 9).toString() + 'px');
 			
 			generateDivDialogModal(generateAnId('model-dialog'));			
-		}
+		};
 		
 		// on select data
 		var selectData = function (selectedData) {
 			if (options.complete != null) {
 				options.complete(selectedData);
 			}
-		}
+		};
 
 		// main
 		if (options == null) {
