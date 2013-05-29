@@ -84,7 +84,7 @@ var ComboAutoBox = {
 			});
 
 			$('#' + modalDialogId).dialog({
-				width: 400,
+				width: 500,
 				height: 400,
 				modal: true,
 				closeOnEscape: true,
@@ -128,7 +128,7 @@ var ComboAutoBox = {
 				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
 			});
 			
-			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 65) + 'px');
+			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 60) + 'px');
 			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
 			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
 				$('#' + modalDialogId).dialog('close');
@@ -147,7 +147,13 @@ var ComboAutoBox = {
 			$(generateImageTag()).prependTo('#' + container + ' > div.container-combo-auto-box');
 
 			spanTag = $('#' + container + ' > div.container-combo-auto-box > span.expand');
-			spanTag.css('margin', '2px 0px 0px ' + (textField.width() + 9).toString() + 'px');
+			var paddingRight = 1;
+			try {
+				paddingRight = parseInt(textField.css('padding-right').replace(/px/, ''));
+			} catch (error) {
+				paddingRight = 1;
+			}
+			spanTag.css('margin', '2px 0px 0px ' + (paddingRight + textField.width() + 9).toString() + 'px');
 			
 			generateDivDialogModal(generateAnId('model-dialog'));			
 		};

@@ -3,14 +3,14 @@ div.container-combo-auto-box span.expand{display:block;position:absolute;cursor:
 
 div.container-combo-auto-box span.expand i{background-image:url(/assets/combo_auto_box_expand.png);width:19px;height:19px;display:block;font-size:0;}
 
-div.dialog-modal div.head { display:block; width:394px; margin: -8px 25px 15px -15px; padding: 0 0 0 0; border: 1px solid #000; background-color:#CECECE; height:30px; -moz-border-radius:4px;-webkit-border-radius:4px;}
-div.dialog-modal div.head span.label { float:left; margin: 5px 0 0 10px; padding: 0 0 0 0; text-weight: bold; }
-div.dialog-modal div.head span.close { float:right; margin: 5px 10px 0 0; padding: 0 0 0 0; }
+div.dialog-modal div.head { display:block; width:99%; position:absolute; z-index:2002; top:0px; left:0px; border: 1px solid #000; background-color:#CECECE; height:30px; -moz-border-radius:4px;-webkit-border-radius:4px;}
+div.dialog-modal div.head span.label { float:left; margin: 5px 0 0 10px; padding: 0 0 0 0; text-weight: bold; font-size:16px; font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";}
+div.dialog-modal div.head span.close { float:right; margin: 5px 10px 0 0; padding: 0 0 0 0; font-size:16px; font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif"; text-indent: 0;}
 div.dialog-modal div.head span.close:hover { cursor:pointer; text-decoration:underline; }
 
-div.dialog-modal div.list { display:block; width:100%; margin: -5px 0 0 0px; padding: 0 0 0 0; overflow-y:auto; overflow-x:hidden;}
+div.dialog-modal div.list { display:block; width:99%; position:absolute; z-index:2003; top:40px; left:0px; overflow-y:auto; overflow-x:hidden;}
 
-div.dialog-modal div.list ul { list-style:none; width:100%; margin:2px 0 0 -40px; display:block;}
+div.dialog-modal div.list ul { list-style:none; width:100%; position:absolute; z-index:2004; top:0px; left:0px; display:block; padding: 0; margin: 0;}
 
 div.dialog-modal div.list ul li { padding: 5px 0 5px 3px; margin-left:0px; width:100%; border-bottom:1px solid #DCDCDC; font-size:12px; }
-div.dialog-modal div.list ul li:hover { cursor:pointer; text-decoration:underline; }
+div.dialog-modal div.list ul li:hover { cursor:pointer; text-decoration:underline; background-color:#F9F9F9; }
