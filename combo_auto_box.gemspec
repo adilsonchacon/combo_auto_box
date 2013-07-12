@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.name = "combo_auto_box"
   s.version = ComboAutoBox::VERSION
   s.platform = Gem::Platform::RUBY
+  s.licenses = ['MIT', 'GPL-2']
   s.authors = ["Adilson Chacon"]
   s.email = ["adilsonchacon@gmail.com"]
   s.homepage = %q{https://github.com/adilsonchacon/combo_auto_box}
