@@ -21,7 +21,8 @@ var ComboAutoBox = {
 						selectData($('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
-						addItem(inputId, $('#' + inputId).val());
+						addItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
+						selectData($('#' + inputId).val());
 						$('#' + inputId).val('');
 					}
 					return false;		
@@ -37,7 +38,8 @@ var ComboAutoBox = {
 						return selectData($('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).val('');
-						addItem(inputId, ui.item.label);
+						addItem(inputId, ui.item.label, ui.item.id);
+						selectData(ui.item.id);
 						return false;
 					}
 				}
@@ -62,7 +64,10 @@ var ComboAutoBox = {
 			var html = 'input type="text"';
 			if (options.html != null) {
 				$.each(options.html, function(key, value) {
-			    	html = html + ' '+ key +'="' + value + '"';
+					if ((key == 'name') && (options.type == 'multiple')) {
+						return true;
+					}
+		    		html = html + ' '+ key +'="' + value + '"';
 				});
 			}
 
@@ -172,10 +177,10 @@ var ComboAutoBox = {
 		};
 
 		// add item
-		var addItem = function (inputId, selectedData) {
+		var addItem = function (inputId, selectedData, selectedId) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span></div>');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
 
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
