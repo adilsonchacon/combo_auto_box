@@ -19,6 +19,10 @@ var ComboAutoBox = {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
 						selectData($('#' + inputId).val());
+					} else if (options.type == 'multiple') {
+						$('#' + inputId).autocomplete( "close" );
+						addItem(inputId, $('#' + inputId).val());
+						$('#' + inputId).val('');
 					}
 					return false;		
 				}
@@ -29,8 +33,12 @@ var ComboAutoBox = {
 				select: function(event, ui) {
 					if (options.type == 'simple') {
 						return selectData(ui.item.id);
-					} else {
+					} else if (options.type == 'full') {
 						return selectData($('#' + inputId).val());
+					} else if (options.type == 'multiple') {
+						$('#' + inputId).val('');
+						addItem(inputId, ui.item.label);
+						return false;
 					}
 				}
 			});
@@ -72,7 +80,12 @@ var ComboAutoBox = {
 
 		// Global div for combo auto box
 		var generateDivTag = function () {
-	        return '<div class="container-combo-auto-box">' + generateInputTag() + '</div>';
+			var multiple = ''
+			if (options.type == 'multiple') {
+				multiple = ' multiple'
+			}
+			
+	        return '<div class="container-combo-auto-box' + multiple + '">' + generateInputTag() + '</div>';
 		};
 
 		// dialog modal
@@ -157,7 +170,20 @@ var ComboAutoBox = {
 			
 			generateDivDialogModal(generateAnId('model-dialog'));			
 		};
-		
+
+		// add item
+		var addItem = function (inputId, selectedData) {
+			if (selectedData != '') {
+				var id = generateAnId('item');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span></div>');
+
+				$('#' + id + ' > span').click(function() {
+					$(this).parent().remove();
+				});
+
+			}
+		};
+				
 		// on select data
 		var selectData = function (selectedData) {
 			if (options.complete != null) {
@@ -170,7 +196,7 @@ var ComboAutoBox = {
 			options = {};
 		}
 		
-		if ((options.type == null) || ((options.type != 'simple') && (options.type != 'full'))) {
+		if ((options.type == null) || ((options.type != 'simple') && (options.type != 'full') && (options.type != 'multiple'))) {
 			options.type = 'simple';
 		}
 
