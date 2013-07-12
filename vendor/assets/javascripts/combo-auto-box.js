@@ -85,12 +85,14 @@ var ComboAutoBox = {
 
 		// Global div for combo auto box
 		var generateDivTag = function () {
-			var multiple = ''
+			var derivation = ''
 			if (options.type == 'multiple') {
-				multiple = ' multiple'
+				derivation = ' multiple'
+			} else if (options.type == 'searchable') {
+				derivation = ' searchable'				
 			}
 			
-	        return '<div class="container-combo-auto-box' + multiple + '">' + generateInputTag() + '</div>';
+	        return '<div class="container-combo-auto-box' + derivation + '">' + generateInputTag() + '</div>';
 		};
 
 		// dialog modal
@@ -188,6 +190,13 @@ var ComboAutoBox = {
 
 			}
 		};
+		
+		//  Bind click on div for multiple
+		var bindContainerClick = function(inputId) {
+			$('#' + container + ' > div.multiple').click(function() {
+				$('#' + inputId).focus();
+			});			
+		};
 				
 		// on select data
 		var selectData = function (selectedData) {
@@ -201,7 +210,7 @@ var ComboAutoBox = {
 			options = {};
 		}
 		
-		if ((options.type == null) || ((options.type != 'simple') && (options.type != 'full') && (options.type != 'multiple'))) {
+		if ((options.type == null) || ((options.type != 'simple') && (options.type != 'full') && (options.type != 'multiple') && (options.type != 'searchable'))) {
 			options.type = 'simple';
 		}
 
@@ -212,6 +221,8 @@ var ComboAutoBox = {
 		
 		if (options.type == 'simple') {
 			generateModalDialog(textField);
+		} else if (options.type == 'multiple') {
+			bindContainerClick(textField.attr('id'));
 		}
     }
 
