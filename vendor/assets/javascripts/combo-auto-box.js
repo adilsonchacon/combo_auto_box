@@ -17,7 +17,10 @@ var ComboAutoBox = {
 			$('#' + inputId).keydown(function(e) {
 				if ((e.keyCode == 8) && (options.type == 'multiple') && ($('#' + inputId).val() == '')) {
 					$('#' + container + ' > div.multiple > div.item:last').remove();
-					return false;	
+				}
+
+				if ((e.keyCode == 8) && (options.type == 'searchable') && ($('#' + inputId).val() == '')) {
+					$('#' + container + ' > div.searchable > div.item:last').remove();
 				}
 			});
 			
@@ -31,7 +34,7 @@ var ComboAutoBox = {
 						addItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
 						selectData($('#' + inputId).val());
 						$('#' + inputId).val('');
-					}
+					} 
 					return false;
 				}
 			});
@@ -45,17 +48,41 @@ var ComboAutoBox = {
 						return selectData($('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).val('');
-						addItem(inputId, ui.item.label, ui.item.id);
+						addItem(inputId, ui.item.id, ui.item.label);
+						selectData(ui.item.id);
+						return false;
+					} else if (options.type == 'searchable') {
+						$('#' + inputId).val('');
+						addSearchableItem(inputId, ui.item.id, ui.item.label);
 						selectData(ui.item.id);
 						return false;
 					}
-				}
+				},
+				search: function(event, ui) {
+					if (options.type == 'searchable') {
+						$('#' + inputId).autocomplete("option", { source: setAutoCompleteSource(inputId) }); 
+					}
+				},
+				change: function (event, ui) {
+					if (!ui.item) {
+						$(this).val('');
+					}
+				},
 			});
 		};
 		
 		// set autocomplete source
 		var setAutoCompleteSource = function (inputId) {
-			if (typeof options.source == 'string') {
+			if (options.type == 'searchable') {
+				var new_source = new Array();
+				var operators = i18nMath('en');
+				$.each(options.source, function(i){
+					$.each(operators, function(j){
+						new_source.push( { id: options.source[i]['id'] + '_' + operators[j]['id'], label: options.source[i]['label'] + ' ' + operators[j]['label'] + ' ' + $('#' + inputId).val()} );
+					});
+				});
+				return new_source;
+			} else if (typeof options.source == 'string') {
 				return function(request, response) {
 					var term = 'term=' + $('#' + inputId).val();
 					var params = (options.data == null) ? term : options.data + '&' + term;
@@ -66,12 +93,37 @@ var ComboAutoBox = {
 			}
 		};
 		
+		// get i18n math comparisons
+		var i18nMath = function (language) {
+			var operators = new Array();
+			switch(language) {
+				case 'en':
+					operators = [ { id: 'cont', label: 'contain' }, { id: 'eq', label: 'equal' }, { id: 'gteq', label: 'greater or equal' }, { id: 'lteq', label: 'less or equal' } ];
+				break;
+				case 'pt-br':
+					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior que' }, { id: 'lteq', label: 'menor que' } ];
+				break;
+				case 'pt':
+					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior que' }, { id: 'lteq', label: 'menor que' } ];
+				break;
+				case 'fr':
+				    operators = [ { id: 'cont', label: 'contient' }, { id: 'eq', label: 'égal' }, { id: 'gteq', label: 'supérieur ou égal' }, { id: 'lteq', label: 'inférieur ou égal' } ];
+				break;
+				case 'es':
+					operators = [ { id: 'cont', label: 'contiene' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'mayor o igual' }, { id: 'lteq', label: 'menos o igual' } ];
+				break;
+				default:
+					operators = [ { id: 'cont', label: '~=' }, { id: 'eq', label: '=' }, { id: 'gteq', label: '>=' }, { id: 'lteq', label: '<=' } ];
+			}
+			return operators;
+		};
+		
 		// generates text field with html options
 		var generateInputTag = function () {
 			var html = 'input type="text"';
 			if (options.html != null) {
 				$.each(options.html, function(key, value) {
-					if ((key == 'name') && (options.type == 'multiple')) {
+					if ((key == 'name') && ((options.type == 'multiple') || (options.type == 'multiple'))) {
 						return true;
 					}
 		    		html = html + ' '+ key +'="' + value + '"';
@@ -186,7 +238,7 @@ var ComboAutoBox = {
 		};
 
 		// add item
-		var addItem = function (inputId, selectedData, selectedId) {
+		var addItem = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
@@ -197,10 +249,32 @@ var ComboAutoBox = {
 
 			}
 		};
-		
-		//  Bind click on div for multiple
+
+		// add searchable item
+		var addSearchableItem = function (inputId, selectedId, selectedData) {
+			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
+			var maths = $.map(i18nMath('en'), function(val, i) { return val['label']}).join('|');
+			var pattern = new RegExp('(' + fields + ') (' + maths + ') (.*)');
+			var value = selectedData.match(pattern)[3];
+			
+			if (selectedData != '') {
+				var id = generateAnId('item');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +']" value="'+ value +'"></div>');
+
+				$('#' + id + ' > span').click(function() {
+					$(this).parent().remove();
+				});
+
+			}
+		};
+				
+		//  Bind click on div for multiple or searchble
 		var bindContainerClick = function(inputId) {
 			$('#' + container + ' > div.multiple').click(function() {
+				$('#' + inputId).focus();
+			});			
+
+			$('#' + container + ' > div.searchable').click(function() {
 				$('#' + inputId).focus();
 			});			
 		};
@@ -228,7 +302,7 @@ var ComboAutoBox = {
 		
 		if (options.type == 'simple') {
 			generateModalDialog(textField);
-		} else if (options.type == 'multiple') {
+		} else if ((options.type == 'multiple') || (options.type == 'searchable')) {
 			bindContainerClick(textField.attr('id'));
 		}
     }
