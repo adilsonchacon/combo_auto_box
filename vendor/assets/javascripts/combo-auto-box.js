@@ -251,15 +251,10 @@ var ComboAutoBox = {
 		};
 
 		// add searchable item
-		var addSearchableItem = function (inputId, selectedId, selectedData) {
-			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
-			var maths = $.map(i18nMath('en'), function(val, i) { return val['label']}).join('|');
-			var pattern = new RegExp('(' + fields + ') (' + maths + ') (.*)');
-			var value = selectedData.match(pattern)[3];
-			
+		var addSearchableItem = function (inputId, selectedId, selectedData) {			
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +']" value="'+ value +'"></div>');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +']" value="'+ getSearchableValue(selectedData) +'"></div>');
 
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -267,6 +262,14 @@ var ComboAutoBox = {
 
 			}
 		};
+		
+		// get only the value from selected Data
+		var getSearchableValue = function (selectedData) {
+			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
+			var maths = $.map(i18nMath('en'), function(val, i) { return val['label']}).join('|');
+			var pattern = new RegExp('(' + fields + ') (' + maths + ') (.*)');
+			return selectedData.match(pattern)[3];
+		}
 				
 		//  Bind click on div for multiple or searchble
 		var bindContainerClick = function(inputId) {
