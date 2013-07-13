@@ -14,6 +14,13 @@ var ComboAutoBox = {
 		
 		// binds autocomplete to text field
 		var bindAutoComplete = function (inputId) {
+			$('#' + inputId).keydown(function(e) {
+				if ((e.keyCode == 8) && (options.type == 'multiple') && ($('#' + inputId).val() == '')) {
+					$('#' + container + ' > div.multiple > div.item:last').remove();
+					return false;	
+				}
+			});
+			
 			$('#' + inputId).keypress(function(e) {
 				if (e.which === 13) {
 					if (options.type == 'full') {
@@ -25,7 +32,7 @@ var ComboAutoBox = {
 						selectData($('#' + inputId).val());
 						$('#' + inputId).val('');
 					}
-					return false;		
+					return false;
 				}
 			});
 						
