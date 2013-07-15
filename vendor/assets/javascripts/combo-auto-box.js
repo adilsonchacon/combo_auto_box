@@ -14,6 +14,7 @@ var ComboAutoBox = {
 		
 		// binds autocomplete to text field
 		var bindAutoComplete = function (inputId) {
+ 			var previuosValue = '';
 			$('#' + inputId).keydown(function(e) {
 				if ((e.keyCode == 8) && (options.type == 'multiple') && ($('#' + inputId).val() == '')) {
 					$('#' + container + ' > div.multiple > div.item:last').remove();
@@ -21,7 +22,9 @@ var ComboAutoBox = {
 
 				if ((e.keyCode == 8) && (options.type == 'searchable') && ($('#' + inputId).val() == '')) {
 					$('#' + container + ' > div.searchable > div.item:last').remove();
+					selectData('');
 				}
+
 			});
 			
 			$('#' + inputId).keypress(function(e) {
@@ -68,6 +71,9 @@ var ComboAutoBox = {
 						$(this).val('');
 					}
 				},
+				focus: function (event, ui) {
+					event.preventDefault();
+				},
 			});
 		};
 		
@@ -75,10 +81,13 @@ var ComboAutoBox = {
 		var setAutoCompleteSource = function (inputId) {
 			if (options.type == 'searchable') {
 				var new_source = new Array();
-				var operators = i18nMath('en');
+				var operators = i18nMath(options.lang);
 				$.each(options.source, function(i){
+					validIndexes = validSource(options.source[i]);
 					$.each(operators, function(j){
-						new_source.push( { id: options.source[i]['id'] + '_' + operators[j]['id'], label: options.source[i]['label'] + ' ' + operators[j]['label'] + ' ' + $('#' + inputId).val()} );
+						if (validIndexes.indexOf(j) >= 0) {
+							new_source.push( { id: options.source[i]['id'] + '_' + operators[j]['id'], label: options.source[i]['label'] + ' ' + operators[j]['label'] + ' ' + $('#' + inputId).val()} );
+						}
 					});
 				});
 				return new_source;
@@ -98,7 +107,7 @@ var ComboAutoBox = {
 			var operators = new Array();
 			switch(language) {
 				case 'en':
-					operators = [ { id: 'cont', label: 'contain' }, { id: 'eq', label: 'equal' }, { id: 'gteq', label: 'greater or equal' }, { id: 'lteq', label: 'less or equal' } ];
+					operators = [ { id: 'cont', label: 'contains' }, { id: 'eq', label: 'equal' }, { id: 'gteq', label: 'greater or equal' }, { id: 'lteq', label: 'less or equal' } ];
 				break;
 				case 'pt-br':
 					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior que' }, { id: 'lteq', label: 'menor que' } ];
@@ -123,7 +132,7 @@ var ComboAutoBox = {
 			var html = 'input type="text"';
 			if (options.html != null) {
 				$.each(options.html, function(key, value) {
-					if ((key == 'name') && ((options.type == 'multiple') || (options.type == 'multiple'))) {
+					if ((key == 'name') && ((options.type == 'multiple') || (options.type == 'searchable'))) {
 						return true;
 					}
 		    		html = html + ' '+ key +'="' + value + '"';
@@ -258,6 +267,7 @@ var ComboAutoBox = {
 
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
+					selectData('');
 				});
 
 			}
@@ -266,7 +276,7 @@ var ComboAutoBox = {
 		// get only the value from selected Data
 		var getSearchableValue = function (selectedData) {
 			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
-			var maths = $.map(i18nMath('en'), function(val, i) { return val['label']}).join('|');
+			var maths = $.map(i18nMath(options.lang), function(val, i) { return val['label']}).join('|');
 			var pattern = new RegExp('(' + fields + ') (' + maths + ') (.*)');
 			return selectedData.match(pattern)[3];
 		}
@@ -289,14 +299,65 @@ var ComboAutoBox = {
 			}
 		};
 
+		// valid language or set 'en' as default
+		var validLanguage = function () {
+			var langs = ['math', 'en', 'pt-br', 'pt', 'es', 'fr'];
+			for(var i=0; i<langs.length;i++) {
+				if (options.lang == langs[i]) {
+					return true;
+				}
+			}
+			
+			options.lang = 'en';
+			return true;
+		};
+
+		// valid language or set 'en' as default
+		var validType = function () {
+			var types = ['simple', 'full', 'multiple', 'searchable'];
+			for(var i=0; i<types.length;i++) {
+				if (options.type == types[i]) {
+					return true;
+				}
+			}
+			
+			options.type = 'simple';
+			return true;
+		};
+		
+		// valid sources for only and except
+		var validSource = function (source) {
+			operators = i18nMath('math');
+			validIndexes = new Array();
+			
+			if (((source['only'] != null) && (source['except'] != null)) || ((source['only'] == null) && (source['except'] == null))) {
+				for(var i=0; i<operators.length;i++) {
+					validIndexes.push(i);
+				}
+			} else if (source['only'] != null) {
+				for(var i=0; i<operators.length;i++) {
+					if ((source['only'].indexOf(operators[i]['id']) + source['only'].indexOf(operators[i]['label'])) >= -1) {
+						validIndexes.push(i);
+					}
+				}				
+			} else if (source['except'] != null) {
+				for(var i=0; i<operators.length;i++) {
+					if ((source['except'].indexOf(operators[i]['id']) + source['except'].indexOf(operators[i]['label'])) == -2) {
+						validIndexes.push(i);
+					}
+				}
+			}
+			
+			return validIndexes;
+		}
+
 		// main
 		if (options == null) {
 			options = {};
 		}
-		
-		if ((options.type == null) || ((options.type != 'simple') && (options.type != 'full') && (options.type != 'multiple') && (options.type != 'searchable'))) {
-			options.type = 'simple';
-		}
+
+		validLanguage();
+		validType();
 
 		$('#' + container).html(generateDivTag());
 		
