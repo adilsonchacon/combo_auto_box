@@ -9,7 +9,7 @@ var ComboAutoBox = {
 				now++;
 			}
 
-			return "combo-auto-box-" + now;
+			return prefix + "-" + now;
 		};
 		
 		// binds autocomplete to text field
@@ -56,7 +56,7 @@ var ComboAutoBox = {
 						return false;
 					} else if (options.type == 'searchable') {
 						$('#' + inputId).val('');
-						addSearchableItem(inputId, ui.item.id, ui.item.label);
+						addSearchableItemForRansack(inputId, ui.item.id, ui.item.label);
 						selectData(ui.item.id);
 						return false;
 					}
@@ -147,9 +147,30 @@ var ComboAutoBox = {
 		};
 
 		// On click opens modal image tag inside "i" tag through css
-		var generateImageTag = function () {
-	        return '<span class="expand"><i></i></span>';
+		var generateExpander = function () {
+			if (options.type == 'simple') {
+	        	return '<span class="simple"><i></i></span>';
+			} else if (options.type == 'multiple') {
+	        	return '<span class="multiple">' + options.label + ':</span>';
+			}
 		};
+
+		var adjustExpanderImage = function() {
+			if (options.type != 'simple') {
+				return false;
+			}
+			
+			spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
+			var paddingRight = 1;
+			try {
+				paddingRight = parseInt(textField.css('padding-right').replace(/px/, ''));
+			} catch (error) {
+				paddingRight = 1;
+			}
+			spanTag.css('margin', '2px 0px 0px ' + (paddingRight + textField.width() + 9).toString() + 'px');
+			
+			return true;
+		}
 
 		// Global div for combo auto box
 		var generateDivTag = function () {
@@ -183,7 +204,7 @@ var ComboAutoBox = {
 			
 			$("#" + modalDialogId).siblings('div.ui-dialog-titlebar').remove();
 			
-			$('#' + container + ' > div.container-combo-auto-box > span.expand').click(function() { 
+			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
 				openModalDialog(modalDialogId) 
 			});
 		};
@@ -219,9 +240,19 @@ var ComboAutoBox = {
 			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 60) + 'px');
 			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
 			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
+				var thisId = $(this).children('span.combo-auto-box-item-id').text();
+				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
+				
 				$('#' + modalDialogId).dialog('close');
-				$('#' + container + ' > div.container-combo-auto-box > input').val($(this).children('span.combo-auto-box-item-label').text());
-				selectData($(this).children('span.combo-auto-box-item-id').text());
+				
+				if (options.type == 'simple') {
+					$('#' + container + ' > div.container-combo-auto-box > input').val(thisLabel);
+					selectData(thisId);
+				} else if (options.type == 'multiple') {
+					$('#' + container + ' > div.container-combo-auto-box > input').val('');
+					addItem($('#' + container + ' > div.container-combo-auto-box > input').attr('id'), thisLabel, thisLabel);
+					selectData(thisId);
+				}
 			});			
 		};
 
@@ -232,16 +263,9 @@ var ComboAutoBox = {
 		
 		// starting generate modial dialog
 		var generateModalDialog = function (textField) {
-			$(generateImageTag()).prependTo('#' + container + ' > div.container-combo-auto-box');
+			$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box');
 
-			spanTag = $('#' + container + ' > div.container-combo-auto-box > span.expand');
-			var paddingRight = 1;
-			try {
-				paddingRight = parseInt(textField.css('padding-right').replace(/px/, ''));
-			} catch (error) {
-				paddingRight = 1;
-			}
-			spanTag.css('margin', '2px 0px 0px ' + (paddingRight + textField.width() + 9).toString() + 'px');
+			adjustExpanderImage();
 			
 			generateDivDialogModal(generateAnId('model-dialog'));			
 		};
@@ -259,11 +283,29 @@ var ComboAutoBox = {
 			}
 		};
 
+		// add searchable item for ransack
+		var addSearchableItemForRansack = function (inputId, selectedId, selectedData) {
+			if (selectedData != '') {
+				var ransackId = generateAnId('ransack');
+				attribute = getSearchableAttribute(selectedId);
+				fieldAttribute = '<input type="hidden" name="q[g]['+ attribute +'][c]['+ ransackId +'][a][0][name]"  value="'+ attribute +'">';
+				fieldCondition = '<input type="hidden" name="q[g]['+ attribute +'][c]['+ ransackId +'][p]"           value="'+ getSearchableCondition(selectedId) +'">';
+				fieldValue =     '<input type="hidden" name="q[g]['+ attribute +'][c]['+ ransackId +'][v][0][value]" value="'+ getSearchableValue(selectedData) +'">';
+				var id = generateAnId('item');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
+
+				$('#' + id + ' > span').click(function() {
+					$(this).parent().remove();
+					selectData('');
+				});
+			}
+		};
+		
 		// add searchable item
 		var addSearchableItem = function (inputId, selectedId, selectedData) {			
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +']" value="'+ getSearchableValue(selectedData) +'"></div>');
+				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ getSearchableValue(selectedData) +'"></div>');
 
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -272,7 +314,23 @@ var ComboAutoBox = {
 
 			}
 		};
-		
+						
+		// get only the attribute from selected Data
+		var getSearchableAttribute = function (selectedId) {
+			var fields = $.map(options.source, function(val, i) { return val['id']}).join('|');
+			var maths = $.map(i18nMath(options.lang), function(val, i) { return val['id']}).join('|');
+			var pattern = new RegExp('(' + fields + ')_(' + maths + ')');
+			return selectedId.match(pattern)[1];
+		}
+				
+		// get only the condition from selected Data
+		var getSearchableCondition = function (selectedId) {
+			var fields = $.map(options.source, function(val, i) { return val['id']}).join('|');
+			var maths = $.map(i18nMath(options.lang), function(val, i) { return val['id']}).join('|');
+			var pattern = new RegExp('(' + fields + ')_(' + maths + ')');
+			return selectedId.match(pattern)[2];
+		}
+
 		// get only the value from selected Data
 		var getSearchableValue = function (selectedData) {
 			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
@@ -364,9 +422,11 @@ var ComboAutoBox = {
 		textField = $('#' + container + ' > div.container-combo-auto-box > input');
 		bindAutoComplete(textField.attr('id'));
 		
-		if (options.type == 'simple') {
+		if ((options.type == 'simple') || (options.type == 'multiple')) {
 			generateModalDialog(textField);
-		} else if ((options.type == 'multiple') || (options.type == 'searchable')) {
+		}
+		
+		if ((options.type == 'multiple') || (options.type == 'searchable')) {
 			bindContainerClick(textField.attr('id'));
 		}
     }
