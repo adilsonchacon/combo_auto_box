@@ -111,7 +111,7 @@ var ComboAutoBox = {
 			}
 		};
 		
-		//
+		// source items for searchable
 		var sourceForSearchable = function (inputId) {
 			var new_source = new Array();
 			var operators = i18nMath(options.lang);
