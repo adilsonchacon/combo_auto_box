@@ -4,7 +4,7 @@ var ComboAutoBox = {
 		// generatea an ID based on current time
 		var generateShortId = function(prefix) {
 			var now = 0;
-			while ($("#" + prefix +"-" + now).length != 0) {
+			while ($('input[name*="[' + prefix +"-" + now + ']"]').length != 0) {
 				now++;
 			}
 	
@@ -46,7 +46,17 @@ var ComboAutoBox = {
 						addItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
 						selectData($('#' + inputId).val());
 						$('#' + inputId).val('');
-					} 
+					} else if ((options.type == 'searchable') && ($('#' + inputId).val()) != '') {
+						try {
+							var item = sourceForSearchable(inputId)[0];
+							addSearchableItemForRansack(inputId, item.id, item.label);
+							selectData(item.id);
+							$('#' + inputId).val('');
+							$('#' + inputId).autocomplete('close');
+						} catch (error) {
+							
+						}
+					}
 					return false;
 				}
 			});
@@ -89,17 +99,7 @@ var ComboAutoBox = {
 		// set autocomplete source
 		var setAutoCompleteSource = function (inputId) {
 			if (options.type == 'searchable') {
-				var new_source = new Array();
-				var operators = i18nMath(options.lang);
-				$.each(options.source, function(i){
-					validIndexes = validSource(options.source[i]);
-					$.each(operators, function(j){
-						if (validIndexes.indexOf(j) >= 0) {
-							new_source.push( { id: options.source[i]['id'] + '_' + operators[j]['id'], label: options.source[i]['label'] + ' ' + operators[j]['label'] + ' ' + $('#' + inputId).val()} );
-						}
-					});
-				});
-				return new_source;
+				return sourceForSearchable(inputId);
 			} else if (typeof options.source == 'string') {
 				return function(request, response) {
 					var term = 'term=' + $('#' + inputId).val();
@@ -110,6 +110,21 @@ var ComboAutoBox = {
 				return options.source;
 			}
 		};
+		
+		//
+		var sourceForSearchable = function (inputId) {
+			var new_source = new Array();
+			var operators = i18nMath(options.lang);
+			$.each(options.source, function(i){
+				validIndexes = validSource(options.source[i]);
+				$.each(operators, function(j){
+					if (validIndexes.indexOf(j) >= 0) {
+						new_source.push( { id: options.source[i]['id'] + '_' + operators[j]['id'], label: options.source[i]['label'] + ' ' + operators[j]['label'] + ' ' + $('#' + inputId).val()} );
+					}
+				});
+			});
+			return new_source;			
+		}
 	
 		// get i18n math comparisons
 		var i18nMath = function (language) {
@@ -283,7 +298,7 @@ var ComboAutoBox = {
 		var addItem = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ selectedData +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -304,7 +319,7 @@ var ComboAutoBox = {
 				fieldCondition = '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][p]"           value="'+ predicate['condition'] +'">';
 				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ getSearchableValue(selectedData) +'">';
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ selectedData +'<span title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -317,7 +332,7 @@ var ComboAutoBox = {
 		var addSearchableItem = function (inputId, selectedId, selectedData) {			
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" title="Remove Item" id="' + id + '">'+ selectedData +'<span>x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ getSearchableValue(selectedData) +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ selectedData +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ getSearchableValue(selectedData) +'"></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -376,6 +391,11 @@ var ComboAutoBox = {
 				$('#' + inputId).focus();
 			});			
 		};
+		
+		var normalizeStyles = function(inputId) {
+			$('#' + container).css('background-color', $('#' + inputId).css('background-color'));
+			$('#' + inputId).css('border', '0px');
+		}
 			
 		// on select data
 		var selectData = function (selectedData) {
@@ -455,6 +475,7 @@ var ComboAutoBox = {
 	
 		if ((options.type == 'multiple') || (options.type == 'searchable')) {
 			bindContainerClick(textField.attr('id'));
+			normalizeStyles(textField.attr('id'));
 		}
 		
 		if ((options.type == 'multiple') && (options.initials != null)) {
