@@ -302,8 +302,8 @@ var ComboAutoBox = {
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
+					unselectData(selectedId, selectedData);
 				});
-	
 			}
 		};
 	
@@ -324,6 +324,7 @@ var ComboAutoBox = {
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
 					selectData('');
+					unselectData(selectedId, selectedData);
 				});
 			}
 		};
@@ -337,6 +338,7 @@ var ComboAutoBox = {
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
 					selectData('');
+					unselectData(selectedId, selectedData);
 				});
 	
 			}
@@ -412,6 +414,16 @@ var ComboAutoBox = {
 		var selectData = function (selectedData) {
 			if (options.complete != null) {
 				options.complete(selectedData);
+			} else if (options.select != null) {
+				options.select(selectedData);
+			}
+
+		};
+		
+		// on unselect data
+		var unselectData = function (selectedId, selectedData) {
+			if (options.unselect != null) {
+				options.unselect(selectedId, selectedData);
 			}
 		};
 	
