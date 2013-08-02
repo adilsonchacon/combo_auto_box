@@ -26,12 +26,18 @@ var ComboAutoBox = {
 			var previuosValue = '';
 			$('#' + inputId).keydown(function(e) {
 				if ((e.keyCode == 8) && (options.type == 'multiple') && ($('#' + inputId).val() == '')) {
+					var value = $('#' + container + ' > div.multiple > div.item:last > input').val();
+					var label = $('#' + container + ' > div.multiple > div.item:last').text();
 					$('#' + container + ' > div.multiple > div.item:last').remove();
+					unselectData(value, label);
 				}
 	
 				if ((e.keyCode == 8) && (options.type == 'searchable') && ($('#' + inputId).val() == '')) {
+					var label = $('#' + container + ' > div.searchable > div.item:last > input[name*="value"]').val();
+					var attribute = $('#' + container + ' > div.searchable > div.item:last > input[name*="name"]').val();
+					var condition = $('#' + container + ' > div.searchable > div.item:last > input[name*="p"]').val();
 					$('#' + container + ' > div.searchable > div.item:last').remove();
-					selectData('');
+					unselectData(attribute + "_" +condition, label);
 				}
 	
 			});
@@ -323,7 +329,6 @@ var ComboAutoBox = {
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
-					selectData('');
 					unselectData(selectedId, selectedData);
 				});
 			}
@@ -337,7 +342,6 @@ var ComboAutoBox = {
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
-					selectData('');
 					unselectData(selectedId, selectedData);
 				});
 	
