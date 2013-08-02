@@ -281,6 +281,7 @@ var ComboAutoBox = {
 				} else if (options.type == 'multiple') {
 					$('#' + container + ' > div.container-combo-auto-box > input').val('');
 					addItem($('#' + container + ' > div.container-combo-auto-box > input').attr('id'), thisLabel, thisLabel);
+					$('#' + container + ' > div.container-combo-auto-box > input[type="text"]').focus();
 					selectData(thisId);
 				}
 			});			
