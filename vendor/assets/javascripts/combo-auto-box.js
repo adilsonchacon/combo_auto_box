@@ -55,8 +55,8 @@ var ComboAutoBox = {
 							
 						}
 					}
-					return false;
 				}
+				return false;
 			});
 					
 			$('#' + inputId).autocomplete({
