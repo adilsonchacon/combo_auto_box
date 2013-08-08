@@ -25,40 +25,32 @@ var ComboAutoBox = {
 		var bindAutoComplete = function (inputId) {
 			var previuosValue = '';
 			$('#' + inputId).keydown(function(e) {
-				if ((e.keyCode == 8) && (options.type == 'multiple') && ($('#' + inputId).val() == '')) {
-					var value = $('#' + container + ' > div.multiple > div.item:last > input').val();
-					var label = $('#' + container + ' > div.multiple > div.item:last').text();
-					$('#' + container + ' > div.multiple > div.item:last').remove();
-					unselectData(value, label);
+				if ((e.keyCode == 8) && ($('#' + inputId).val() == '')) {
+					if (options.type == 'multiple') {
+						removeLastMultipleItem();
+					} else if (options.type == 'searchable') {
+						removeLastSearchableItemForRansack();
+					}
 				}
-	
-				if ((e.keyCode == 8) && (options.type == 'searchable') && ($('#' + inputId).val() == '')) {
-					var label = $('#' + container + ' > div.searchable > div.item:last > input[name*="value"]').val();
-					var attribute = $('#' + container + ' > div.searchable > div.item:last > input[name*="name"]').val();
-					var condition = $('#' + container + ' > div.searchable > div.item:last > input[name*="p"]').val();
-					$('#' + container + ' > div.searchable > div.item:last').remove();
-					unselectData(attribute + "_" +condition, label);
-				}
-	
 			});
 		
 			$('#' + inputId).keypress(function(e) {
-				if (e.which === 13) {
+				if ((e.which === 13) && ($('#' + inputId).val() != '')) {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
-						addItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
+						addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 						$('#' + inputId).val('');
-					} else if ((options.type == 'searchable') && ($('#' + inputId).val()) != '') {
+					} else if (options.type == 'searchable') {
 						try {
+							$('#' + inputId).autocomplete('close');
 							var item = sourceForSearchable(inputId)[0];
 							addSearchableItemForRansack(inputId, item.id, item.label);
 							selectData(item.id, item.label);
 							$('#' + inputId).val('');
-							$('#' + inputId).autocomplete('close');
 						} catch (error) {
 							
 						}
@@ -76,7 +68,7 @@ var ComboAutoBox = {
 						return selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).val('');
-						addItem(inputId, ui.item.id, ui.item.label);
+						addMultipleItem(inputId, ui.item.id, ui.item.label);
 						selectData(ui.item.id, ui.item.label);
 						return false;
 					} else if (options.type == 'searchable') {
@@ -280,7 +272,7 @@ var ComboAutoBox = {
 					selectData(thisId, thisLabel);
 				} else if (options.type == 'multiple') {
 					$('#' + container + ' > div.container-combo-auto-box > input').val('');
-					addItem($('#' + container + ' > div.container-combo-auto-box > input').attr('id'), thisId, thisLabel);
+					addMultipleItem($('#' + container + ' > div.container-combo-auto-box > input').attr('id'), thisId, thisLabel);
 					$('#' + container + ' > div.container-combo-auto-box > input[type="text"]').focus();
 					selectData(thisId, thisLabel);
 				}
@@ -301,8 +293,8 @@ var ComboAutoBox = {
 			generateDivDialogModal(generateAnId('model-dialog'));			
 		};
 	
-		// add item
-		var addItem = function (inputId, selectedId, selectedData) {
+		// add multiple item
+		var addMultipleItem = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
@@ -311,6 +303,16 @@ var ComboAutoBox = {
 					$(this).parent().remove();
 					unselectData(selectedId, selectedData);
 				});
+			}
+		};
+	
+		// remove multiple item
+		var removeLastMultipleItem = function () {
+			if ($('#' + container + ' > div.multiple > div.item').length > 0) {
+				var value = $('#' + container + ' > div.multiple > div.item:last > input').val();
+				var label = $('#' + container + ' > div.multiple > div.item:last').text();
+				$('#' + container + ' > div.multiple > div.item:last').remove();
+				unselectData(value, label);
 			}
 		};
 	
@@ -334,6 +336,16 @@ var ComboAutoBox = {
 				});
 			}
 		};
+		
+		var removeLastSearchableItemForRansack = function() {
+			if ($('#' + container + ' > div.searchable > div.item').length > 0) {
+				var label = $('#' + container + ' > div.searchable > div.item:last > input[name*="value"]').val();
+				var attribute = $('#' + container + ' > div.searchable > div.item:last > input[name*="name"]').val();
+				var condition = $('#' + container + ' > div.searchable > div.item:last > input[name*="p"]').val();
+				$('#' + container + ' > div.searchable > div.item:last').remove();
+				unselectData(attribute + "_" + condition, label);
+			}			
+		}
 	
 		// add searchable item
 		var addSearchableItem = function (inputId, selectedId, selectedData) {			
@@ -483,6 +495,22 @@ var ComboAutoBox = {
 		
 			return validIndexes;
 		}
+		
+		var handleMultipleInitials = function() {
+			if (options.initials != null) {
+				$.each(options.initials, function(index) {
+					addMultipleItem(textField.attr('id'), options.initials[index]['id'], options.initials[index]['label']);
+				});
+			}
+		}
+
+		var handleSearchbleInitials = function() {
+			if (options.initials != null) {
+				$.each(options.initials, function(index) {
+					addSearchableItemForRansack(textField.attr('id'), options.initials[index]['id'], options.initials[index]['label']);
+				});
+			}
+		}
 	
 		// main
 		if (options == null) {
@@ -497,25 +525,21 @@ var ComboAutoBox = {
 		textField = $('#' + container + ' > div.container-combo-auto-box > input');
 		bindAutoComplete(textField.attr('id'));
 	
-		if ((options.type == 'simple') || (options.type == 'multiple')) {
+		if (options.type == 'simple') {
 			generateModalDialog(textField);
 		}
-	
-		if ((options.type == 'multiple') || (options.type == 'searchable')) {
+		
+		if (options.type == 'multiple') {
+			generateModalDialog(textField);
 			bindContainerClick(textField.attr('id'));
 			normalizeStyles(textField.attr('id'));
-		}
-		
-		if ((options.type == 'multiple') && (options.initials != null)) {
-			$.each(options.initials, function(index){
-				addItem(textField.attr('id'), options.initials[index]['id'], options.initials[index]['label']);
-			}); 
+			handleMultipleInitials();
 		}
 
-		if ((options.type == 'searchable') && (options.initials != null)) {
-			$.each(options.initials, function(index){
-				addSearchableItemForRansack(textField.attr('id'), options.initials[index]['id'], options.initials[index]['label']);
-			}); 
+		if (options.type == 'searchable') {
+			bindContainerClick(textField.attr('id'));
+			normalizeStyles(textField.attr('id'));
+			handleSearchbleInitials();
 		}
 
 	}
