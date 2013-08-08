@@ -132,10 +132,10 @@ var ComboAutoBox = {
 					operators = [ { id: 'cont', label: 'contains' }, { id: 'eq', label: 'equal' }, { id: 'gteq', label: 'greater or equal' }, { id: 'lteq', label: 'less or equal' } ];
 				break;
 				case 'pt-br':
-					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior que' }, { id: 'lteq', label: 'menor que' } ];
+					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior ou igual' }, { id: 'lteq', label: 'menor ou igual' } ];
 				break;
 				case 'pt':
-					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior que' }, { id: 'lteq', label: 'menor que' } ];
+					operators = [ { id: 'cont', label: 'contém' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'maior ou igual' }, { id: 'lteq', label: 'menor ou igual' } ];
 				break;
 				case 'fr':
 				    operators = [ { id: 'cont', label: 'contient' }, { id: 'eq', label: 'égal' }, { id: 'gteq', label: 'supérieur ou égal' }, { id: 'lteq', label: 'inférieur ou égal' } ];
