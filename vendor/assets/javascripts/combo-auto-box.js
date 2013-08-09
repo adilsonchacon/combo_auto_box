@@ -55,8 +55,11 @@ var ComboAutoBox = {
 							
 						}
 					}
+					
+					return false;
+				} else if ((e.which === 13) && ($('#' + inputId).val() == '')) {
+					return false;					
 				}
-				return false;
 			});
 					
 			$('#' + inputId).autocomplete({
