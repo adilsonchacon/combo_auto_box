@@ -146,6 +146,9 @@ var ComboAutoBox = {
 				case 'es':
 					operators = [ { id: 'cont', label: 'contiene' }, { id: 'eq', label: 'igual' }, { id: 'gteq', label: 'mayor o igual' }, { id: 'lteq', label: 'menos o igual' } ];
 				break;
+				case 'it':
+					operators = [ { id: 'cont', label: 'contiene' }, { id: 'eq', label: 'uguale' }, { id: 'gteq', label: 'maggiore o uguale' }, { id: 'lteq', label: 'minore o uguale' } ];
+				break;
 				default:
 					operators = [ { id: 'cont', label: '~=' }, { id: 'eq', label: '=' }, { id: 'gteq', label: '>=' }, { id: 'lteq', label: '<=' } ];
 			}
@@ -192,7 +195,8 @@ var ComboAutoBox = {
 			} catch (error) {
 				paddingRight = 1;
 			}
-			spanTag.css('margin', '2px 0px 0px ' + (paddingRight + textField.width() + 9).toString() + 'px');
+			spanTag.css('margin', '3px 0px 0px ' + (textField.width() - 13).toString() + 'px');
+			spanTag.children(':first').css('height', (textField.height() - 9).toString() + 'px');
 		
 			return true;
 		}
