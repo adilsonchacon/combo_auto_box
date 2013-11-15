@@ -154,6 +154,28 @@ var ComboAutoBox = {
 			}
 			return operators;
 		};
+
+		var i18nShowSearchOptions = function (language) {
+			var title = 'Show search options';
+			switch(language) {
+				case 'pt-br':
+					title = 'Exibir opções de busca';
+				break;
+				case 'pt':
+					title = 'Exibir opções de busca';
+				break;
+				case 'fr':
+				    title = 'Afficher les options de recherche';
+				break;
+				case 'es':
+					title = 'Mostrar opciones de búsqueda';
+				break;
+				case 'it':
+					title = 'Visualizza opzioni di ricerca';
+				break;
+			}
+			return title;
+		};
 	
 		// generates text field with html options
 		var generateInputTag = function () {
@@ -177,7 +199,7 @@ var ComboAutoBox = {
 		// On click opens modal image tag inside "i" tag through css
 		var generateExpander = function () {
 			if (options.type == 'simple') {
-		        	return '<span class="simple"><i></i></span>';
+		        	return '<span class="simple" title="' + i18nShowSearchOptions(options.lang) + '"><i></i></span>';
 			} else if (options.type == 'multiple') {
 		        	return '<span class="multiple">' + options.label + ':</span>';
 			}
@@ -195,10 +217,46 @@ var ComboAutoBox = {
 			} catch (error) {
 				paddingRight = 1;
 			}
-			spanTag.css('margin', '3px 0px 0px ' + (textField.width() - 13).toString() + 'px');
-			spanTag.children(':first').css('height', (textField.height() - 9).toString() + 'px');
+			spanTag.css('margin', '3px 0px 0px ' + (getTextFieldWidth(textField) - 13).toString() + 'px');
+			
+			spanTag.children(':first').css('height', (getTextFieldHeight(textField) - 10).toString() + 'px');
 		
 			return true;
+		}
+
+		var getTextFieldWidth = function (textField) {
+			var widthTotal = 0;
+			
+			if (textField.width() != null) {
+				widthTotal = widthTotal + textField.width();
+			}
+
+			if (textField.css('padding-right') != null) {
+				padding_right = textField.css('padding-right').toString().replace(/[a-zA-Z]+/g, '');
+				widthTotal = widthTotal + parseInt(padding_right);
+			}
+			
+			return widthTotal;
+		}
+		
+		var getTextFieldHeight = function (textField) {
+			var heightTotal = 0;
+			
+			if (textField.height() != null) {
+				heightTotal = heightTotal + textField.height();
+			}
+
+			if (textField.css('padding-top') != null) {
+				padding_top = textField.css('padding-top').toString().replace(/[a-zA-Z]+/g, '');
+				heightTotal = heightTotal + parseInt(padding_top);
+			}
+			
+			if (textField.css('padding-bottom') != null) {
+				padding_bottom = textField.css('padding-bottom').toString().replace(/[a-zA-Z]+/g, '');
+				heightTotal = heightTotal + parseInt(padding_bottom);
+			}
+			
+			return heightTotal;
 		}
 	
 		// Global div for combo auto box
@@ -210,7 +268,7 @@ var ComboAutoBox = {
 				derivation = ' searchable'				
 			}
 		
-		        return '<div class="container-combo-auto-box' + derivation + '">' + generateInputTag() + '</div>';
+		    return '<div class="container-combo-auto-box' + derivation + '">' + generateInputTag() + '</div>';
 		};
 	
 		// dialog modal
