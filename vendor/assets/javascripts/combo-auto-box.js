@@ -211,15 +211,27 @@ var ComboAutoBox = {
 			}
 		
 			spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
-			var paddingRight = 1;
-			try {
-				paddingRight = parseInt(textField.css('padding-right').replace(/px/, ''));
-			} catch (error) {
-				paddingRight = 1;
-			}
-			spanTag.css('margin', '3px 0px 0px ' + (getTextFieldWidth(textField) - 13).toString() + 'px');
 			
-			spanTag.children(':first').css('height', (getTextFieldHeight(textField) - 10).toString() + 'px');
+			inputWidth = getTextFieldWidth(textField);
+			inputHeight = getTextFieldHeight(textField);
+
+			inputBorderTop = getTextFieldBorder(textField, 'top');
+			inputBorderBottom = getTextFieldBorder(textField, 'bottom');
+
+			if (inputHeight % 2 != 0) {
+				inputBorderTop = inputBorderTop + 2;
+			}
+			
+			iWidth = 20;
+			if (inputWidth < 20) {
+				iWidth = 10;
+			}
+			
+			spanTag.css('margin-top', inputBorderTop.toString() + 'px');
+			spanTag.css('margin-left', (inputWidth - iWidth + 4).toString() + 'px');
+
+			spanTag.children(':first').css('width', iWidth.toString() + 'px');
+			spanTag.children(':first').css('height', inputHeight.toString() + 'px');
 		
 			return true;
 		}
@@ -239,9 +251,21 @@ var ComboAutoBox = {
 			return widthTotal;
 		}
 		
+		var getTextFieldBorder = function (textField, side) {
+			var heightTotal = 0;
+
+			var matched = textField.css('border-' + side).match(/(\d+)(px)/);
+			try {
+				heightTotal = heightTotal + parseInt(matched[1]);
+			} catch (error) {
+			}
+
+			return heightTotal;
+		}
+		
 		var getTextFieldHeight = function (textField) {
 			var heightTotal = 0;
-			
+
 			if (textField.height() != null) {
 				heightTotal = heightTotal + textField.height();
 			}

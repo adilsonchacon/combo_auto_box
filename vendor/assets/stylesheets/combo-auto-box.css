@@ -1,7 +1,6 @@
 span.combo-auto-box-item-id { display:none; }
-div.container-combo-auto-box span.simple { position:absolute;cursor:pointer;display:block;margin:0px 0px 0px 0px; width:20px; }
-/* div.container-combo-auto-box span.simple i { background-image:url(/assets/combo_auto_box_expand.png);width:19px;height:19px;display:block;font-size:0; } */
-div.container-combo-auto-box span.simple i { background:url(/assets/dark-grey-disclosure-arrow-down.png) no-repeat center;width:4px;height:5px;display:block;padding: 3px 6px 7px 6px; background-color:#EFEFEF;}
+div.container-combo-auto-box span.simple { position:absolute;cursor:pointer;display:block;margin:0px 0px 0px 0px; }
+div.container-combo-auto-box span.simple i { background:url(/assets/dark-grey-disclosure-arrow-down.png) no-repeat center;display:block;background-color:#EFEFEF;}
 div.container-combo-auto-box span.simple i:hover { background:url(/assets/light-grey-disclosure-arrow-down.png) no-repeat center; background-color:#EFEFEF;}
 
 div.multiple { border: 1px solid #CDCDCD; display:table; width:100%; }
