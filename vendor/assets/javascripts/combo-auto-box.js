@@ -254,8 +254,8 @@ var ComboAutoBox = {
 		var getTextFieldBorder = function (textField, side) {
 			var heightTotal = 0;
 
-			var matched = textField.css('border-' + side).match(/(\d+)(px)/);
 			try {
+				var matched = textField.css('border-' + side).match(/(\d+)(px)/);
 				heightTotal = heightTotal + parseInt(matched[1]);
 			} catch (error) {
 			}
