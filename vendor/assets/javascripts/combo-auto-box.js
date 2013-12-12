@@ -206,34 +206,42 @@ var ComboAutoBox = {
 		};
 	
 		var adjustExpanderImage = function() {
-			if (options.type != 'simple') {
+			if (options.type == 'simple') {
+				spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
+			
+				inputWidth = getTextFieldWidth(textField);
+				inputHeight = getTextFieldHeight(textField);
+
+				inputBorderTop = getTextFieldBorder(textField, 'top');
+				inputBorderBottom = getTextFieldBorder(textField, 'bottom');
+
+				if (inputHeight % 2 != 0) {
+					inputBorderTop = inputBorderTop + 2;
+				}
+			
+				iWidth = 20;
+				if (inputWidth < 20) {
+					iWidth = 10;
+				}
+			
+				spanTag.css('margin-top', inputBorderTop.toString() + 'px');
+				spanTag.css('margin-left', (inputWidth - iWidth + 4).toString() + 'px');
+
+				spanTag.children(':first').css('width', iWidth.toString() + 'px');
+				spanTag.children(':first').css('height', inputHeight.toString() + 'px');
+		
+				return true;
+			} else if (options.type == 'multiple') {
+				inputTop = 0;
+				try {
+				  inputTop = parseInt(textField.css('margin-top').replace(/px/, ''));
+				  inputTop = inputTop + parseInt(textField.css('padding-top').replace(/px/, ''));
+				  $('#' + container + ' > div.container-combo-auto-box > span.multiple').css('margin-top', ((textField.height() / 2) - ($('span.multiple').height() / 2) - inputTop).toString() + 'px');
+				} catch (error) {
+				}
+			} else {
 				return false;
 			}
-		
-			spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
-			
-			inputWidth = getTextFieldWidth(textField);
-			inputHeight = getTextFieldHeight(textField);
-
-			inputBorderTop = getTextFieldBorder(textField, 'top');
-			inputBorderBottom = getTextFieldBorder(textField, 'bottom');
-
-			if (inputHeight % 2 != 0) {
-				inputBorderTop = inputBorderTop + 2;
-			}
-			
-			iWidth = 20;
-			if (inputWidth < 20) {
-				iWidth = 10;
-			}
-			
-			spanTag.css('margin-top', inputBorderTop.toString() + 'px');
-			spanTag.css('margin-left', (inputWidth - iWidth + 4).toString() + 'px');
-
-			spanTag.children(':first').css('width', iWidth.toString() + 'px');
-			spanTag.children(':first').css('height', inputHeight.toString() + 'px');
-		
-			return true;
 		}
 
 		var getTextFieldWidth = function (textField) {
