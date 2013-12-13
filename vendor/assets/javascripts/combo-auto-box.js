@@ -234,9 +234,12 @@ var ComboAutoBox = {
 			} else if (options.type == 'multiple') {
 				inputTop = 0;
 				try {
-				  inputTop = parseInt(textField.css('margin-top').replace(/px/, ''));
-				  inputTop = inputTop + parseInt(textField.css('padding-top').replace(/px/, ''));
-				  $('#' + container + ' > div.container-combo-auto-box > span.multiple').css('margin-top', ((textField.height() / 2) - ($('span.multiple').height() / 2) - inputTop).toString() + 'px');
+				  spanHeight = $('#' + container + ' > div.container-combo-auto-box > span.multiple').height();
+				  if (spanHeight == 0) {
+					  spanHeight = 20;
+				  }
+				  inputTop = (getTextFieldHeight(textField) / 2) - ((getTextFieldBorder(textField, 'height') + spanHeight) / 2) - 2;
+				  $('#' + container + ' > div.container-combo-auto-box > span.multiple').css('margin-top', (inputTop).toString() + 'px');
 				} catch (error) {
 				}
 			} else {
@@ -273,20 +276,26 @@ var ComboAutoBox = {
 		
 		var getTextFieldHeight = function (textField) {
 			var heightTotal = 0;
-
-			if (textField.height() != null) {
-				heightTotal = heightTotal + textField.height();
-			}
-
-			if (textField.css('padding-top') != null) {
-				padding_top = textField.css('padding-top').toString().replace(/[a-zA-Z]+/g, '');
-				heightTotal = heightTotal + parseInt(padding_top);
-			}
 			
-			if (textField.css('padding-bottom') != null) {
-				padding_bottom = textField.css('padding-bottom').toString().replace(/[a-zA-Z]+/g, '');
-				heightTotal = heightTotal + parseInt(padding_bottom);
-			}
+			try {
+				if (textField.height() != null) {
+					heightTotal = heightTotal + textField.height();
+				}
+			} catch (error) {}
+
+			try {
+				if (textField.css('padding-top') != null) {
+					padding_top = textField.css('padding-top').toString().replace(/[a-zA-Z]+/g, '');
+					heightTotal = heightTotal + parseInt(padding_top);
+				}
+			} catch (error) {}
+			
+			try {
+				if (textField.css('padding-bottom') != null) {
+					padding_bottom = textField.css('padding-bottom').toString().replace(/[a-zA-Z]+/g, '');
+					heightTotal = heightTotal + parseInt(padding_bottom);
+				}
+			} catch (error) {}
 			
 			return heightTotal;
 		}
