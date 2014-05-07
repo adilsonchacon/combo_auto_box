@@ -31,13 +31,21 @@ var ComboAutoBox = {
 					} else if (options.type == 'searchable') {
 						removeLastSearchableItemForRansack();
 					}
+				} else if ((e.keyCode == 9) && ($('#' + inputId).val() != '') && (options.type == 'simple') && (options.source_not_found)) {
+					$('#' + inputId).autocomplete( "close");
+					selectData($('#' + inputId).val(), $('#' + inputId).val());					
+					return true;
 				}
+				
 			});
 		
 			$('#' + inputId).keypress(function(e) {
 				if ((e.which === 13) && ($('#' + inputId).val() != '')) {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
+						selectData($('#' + inputId).val(), $('#' + inputId).val());
+					} else if ((options.type == 'simple') && (options.source_not_found)) {
+						$('#' + inputId).autocomplete( "close");
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
@@ -65,7 +73,10 @@ var ComboAutoBox = {
 			$('#' + inputId).autocomplete({
 				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
-					if (options.type == 'simple') {
+				    if ((options.type == 'simple') && (options.source_not_found)) {
+						selectData($('#' + inputId).val(), $('#' + inputId).val());
+						return false;
+					} else if (options.type == 'simple') {
 						return selectData(ui.item.id, ui.item.label);
 					} else if (options.type == 'full') {
 						return selectData($('#' + inputId).val(), $('#' + inputId).val());
@@ -87,8 +98,9 @@ var ComboAutoBox = {
 					}
 				},
 				change: function (event, ui) {
-					if (!ui.item) {
+					if ((!ui.item) && (!options.source_not_found)) {
 						$(this).val('');
+						selectData('', '');
 					}
 				},
 				focus: function (event, ui) {
@@ -101,16 +113,48 @@ var ComboAutoBox = {
 		var setAutoCompleteSource = function (inputId) {
 			if (options.type == 'searchable') {
 				return sourceForSearchable(inputId);
-			} else if (typeof options.source == 'string') {
-				return function(request, response) {
-					var term = 'term=' + $('#' + inputId).val();
-					var params = (options.data == null) ? term : options.data + '&' + term;
-					return $.getJSON(options.source + '?' + params, response);
-				};
 			} else {
-				return options.source;
+				return function(request, response) {
+					if (typeof options.source == 'string') {
+						var term = 'term=' + $('#' + inputId).val();
+						var params = (options.data == null) ? term : options.data + '&' + term;
+						$.getJSON(options.source + '?' + params, function(data) {
+							if ((options.type == 'simple') && (data.length == 0)) {
+								return response(sourceForNotFound(inputId));
+							} else {
+								options.source_not_found = false;
+								response($.map(data, function (item) {
+									return item;
+								}));
+							}
+						});
+					} else {
+						var selectedSource = new Array();
+						$.each(options.source, function( index, value ){
+							var pattern = new RegExp($('#' + inputId).val(),'i');
+							if (value.label.match(pattern)) {
+								selectedSource.push(value);
+							}
+						});
+
+						if ((options.type == 'simple') && (selectedSource.length == 0)) {
+							return response(sourceForNotFound(inputId));
+						} else {
+							options.source_not_found = false;
+							return response(selectedSource);
+						}
+
+
+					}
+				}
 			}
 		};
+
+		// source items for not found item
+		var sourceForNotFound = function (inputId) {
+			options.source_not_found = true;
+			return [ { id: $('#' + inputId).val(), label: '"' + $('#' + inputId).val() + '" ' + options.not_found_message } ];
+		}
 		
 		// source items for searchable
 		var sourceForSearchable = function (inputId) {
@@ -617,10 +661,22 @@ var ComboAutoBox = {
 				});
 			}
 		}
+		
+		var getSourceNotFound = function(value) {
+			var pattern = new RegExp('^"(' + value + ')"', 'i');
+			var matched = value.match(pattern);
+			return matched[1];
+		}
 	
 		// main
 		if (options == null) {
 			options = {};
+		}
+		
+		options.source_not_found = false;
+
+		if (options.not_found_message == null) {
+			options.not_found_message = "was not found";
 		}
 	
 		validLanguage();
