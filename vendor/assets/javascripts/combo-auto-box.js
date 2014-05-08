@@ -33,6 +33,9 @@ var ComboAutoBox = {
 					}
 				} else if ((e.keyCode == 9) && ($('#' + inputId).val() != '') && (options.type == 'simple') && (options.source_not_found)) {
 					$('#' + inputId).autocomplete( "close");
+					if (!options.not_found_accepted) {
+						$('#' + inputId).val('');
+					}
 					selectData($('#' + inputId).val(), $('#' + inputId).val());					
 					return true;
 				}
@@ -46,6 +49,9 @@ var ComboAutoBox = {
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if ((options.type == 'simple') && (options.source_not_found)) {
 						$('#' + inputId).autocomplete( "close");
+						if (!options.not_found_accepted) {
+							$('#' + inputId).val('');
+						}
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
@@ -74,6 +80,9 @@ var ComboAutoBox = {
 				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
 				    if ((options.type == 'simple') && (options.source_not_found)) {
+						if (!options.not_found_accepted) {
+							$('#' + inputId).val('');
+						}
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 						return false;
 					} else if (options.type == 'simple') {
@@ -699,6 +708,10 @@ var ComboAutoBox = {
 
 		if (options.not_found_message == null) {
 			options.not_found_message = i18nSourceNotFound(options.lang);
+		}
+
+		if (options.not_found_accepted == null) {
+			options.not_found_accepted = false;
 		}
 	
 		validLanguage();
