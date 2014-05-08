@@ -220,7 +220,29 @@ var ComboAutoBox = {
 			}
 			return title;
 		};
-	
+
+		var i18nSourceNotFound = function (language) {
+			var title = 'not found';
+			switch(language) {
+				case 'pt-br':
+					title = 'não encontrado';
+				break;
+				case 'pt':
+					title = 'não encontrado';
+				break;
+				case 'fr':
+				    title = 'pas trouvé';
+				break;
+				case 'es':
+					title = 'no encontrado';
+				break;
+				case 'it':
+					title = 'non trovato';
+				break;
+			}
+			return title;
+		};
+		
 		// generates text field with html options
 		var generateInputTag = function () {
 			var html = 'input type="text"';
@@ -676,7 +698,7 @@ var ComboAutoBox = {
 		options.source_not_found = false;
 
 		if (options.not_found_message == null) {
-			options.not_found_message = "was not found";
+			options.not_found_message = i18nSourceNotFound(options.lang);
 		}
 	
 		validLanguage();
