@@ -31,12 +31,23 @@ var ComboAutoBox = {
 					} else if (options.type == 'searchable') {
 						removeLastSearchableItemForRansack();
 					}
-				} else if ((e.keyCode == 9) && ($('#' + inputId).val() != '') && (options.type == 'simple') && (options.source_not_found)) {
+				} else if ((e.keyCode == 9) && (inputVal != '') && (options.source_not_found) && (options.type == 'simple')) {
 					$('#' + inputId).autocomplete( "close");
 					if (!options.not_found_accepted) {
 						$('#' + inputId).val('');
 					}
 					selectData($('#' + inputId).val(), $('#' + inputId).val());					
+					return true;
+				} else if ((e.keyCode == 9) && (inputVal != '') && (options.source_not_found) && (options.type == 'multiple')) {
+					$('#' + inputId).autocomplete( "close");
+					var inputVal = $('#' + inputId).val().replace(/\t$/, '');
+					if (options.not_found_accepted) {
+						addMultipleItem(inputId, inputVal, inputVal);
+					} else {
+						inputVal = '';
+					}
+					selectData(inputVal, inputVal);
+					$('#' + inputId).val('');
 					return true;
 				}
 				
@@ -47,7 +58,7 @@ var ComboAutoBox = {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
-					} else if ((options.type == 'simple') && (options.source_not_found)) {
+					} else if ((options.source_not_found) && (options.type == 'simple')) {
 						$('#' + inputId).autocomplete( "close");
 						if (!options.not_found_accepted) {
 							$('#' + inputId).val('');
@@ -55,7 +66,11 @@ var ComboAutoBox = {
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
-						addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
+						if ((options.source_not_found) && (!options.not_found_accepted)) {
+							$('#' + inputId).val('');							
+						} else {
+							addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());							
+						}
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 						$('#' + inputId).val('');
 					} else if (options.type == 'searchable') {
@@ -79,11 +94,21 @@ var ComboAutoBox = {
 			$('#' + inputId).autocomplete({
 				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
-				    if ((options.type == 'simple') && (options.source_not_found)) {
+				    if ((options.source_not_found) && (options.type == 'simple')) {
 						if (!options.not_found_accepted) {
 							$('#' + inputId).val('');
 						}
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
+						return false;
+				    } if ((options.source_not_found) && (options.type == 'multiple')) {
+						var inputVal = $('#' + inputId).val();
+						$('#' + inputId).val('');
+						if (options.not_found_accepted) {
+							addMultipleItem(inputId, inputVal, inputVal);
+						} else {
+							inputVal = '';
+						}
+						selectData(inputVal, inputVal);
 						return false;
 					} else if (options.type == 'simple') {
 						return selectData(ui.item.id, ui.item.label);
@@ -128,7 +153,7 @@ var ComboAutoBox = {
 						var term = 'term=' + $('#' + inputId).val();
 						var params = (options.data == null) ? term : options.data + '&' + term;
 						$.getJSON(options.source + '?' + params, function(data) {
-							if ((options.type == 'simple') && (data.length == 0)) {
+							if ((data.length == 0) && ((options.type == 'simple') || (options.type == 'multiple'))) {
 								return response(sourceForNotFound(inputId));
 							} else {
 								options.source_not_found = false;
@@ -140,13 +165,13 @@ var ComboAutoBox = {
 					} else {
 						var selectedSource = new Array();
 						$.each(options.source, function( index, value ){
-							var pattern = new RegExp($('#' + inputId).val(),'i');
+							var pattern = new RegExp($('#' + inputId).val(), 'i');
 							if (value.label.match(pattern)) {
 								selectedSource.push(value);
 							}
 						});
 
-						if ((options.type == 'simple') && (selectedSource.length == 0)) {
+						if ((selectedSource.length == 0) && ((options.type == 'simple') || (options.type == 'multiple'))) {
 							return response(sourceForNotFound(inputId));
 						} else {
 							options.source_not_found = false;
