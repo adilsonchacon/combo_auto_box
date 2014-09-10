@@ -338,7 +338,7 @@ var ComboAutoBox = {
 				  if (spanHeight == 0) {
 					  spanHeight = 20;
 				  }
-				  inputTop = (getTextFieldHeight(textField) / 2) - ((getTextFieldBorder(textField, 'height') + spanHeight) / 2) - 2;
+				  inputTop = (getTextFieldHeight(textField) / 2) - ((getTextFieldBorder(textField, 'top') + spanHeight) / 2) - 2;
 				  $('#' + container + ' > div.container-combo-auto-box > span.multiple').css('margin-top', (inputTop).toString() + 'px');
 				} catch (error) {
 				}
@@ -366,8 +366,8 @@ var ComboAutoBox = {
 			var heightTotal = 0;
 
 			try {
-				var matched = textField.css('border-' + side).match(/(\d+)(px)/);
-				heightTotal = heightTotal + parseInt(matched[1]);
+				var matched = textField.css('border-' + side).match(/([\d\.]+)(px)/);
+				heightTotal = heightTotal + parseFloat(matched[1]);
 			} catch (error) {
 			}
 
