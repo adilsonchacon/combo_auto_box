@@ -90,7 +90,7 @@ var ComboAutoBox = {
 					return false;					
 				}
 			});
-					
+			
 			$('#' + inputId).autocomplete({
 				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
@@ -292,20 +292,32 @@ var ComboAutoBox = {
 			if ((options.html == null) || (options.html.id == null)) {
 			    html = html + ' id="' + generateAnId('combo-auto-box') + '"';
 			}
+			
+			if (options.bootstrap) {
+				html = html + ' class="form-control" '
+			}
 	
-		        return '<' + html + '>';
+		    return '<' + html + '>';
 		};
 	
 		// On click opens modal image tag inside "i" tag through css
 		var generateExpander = function () {
 			if (options.type == 'simple') {
+				if (options.bootstrap) {
+		        	return '<span class="input-group-btn" title="' + i18nShowSearchOptions(options.lang) + '"><button class="btn btn-default" type="button"><i class="glyphicon glyphicon-chevron-down"></i></button></span>';
+				} else {
 		        	return '<span class="simple" title="' + i18nShowSearchOptions(options.lang) + '"><i></i></span>';
+				}
 			} else if (options.type == 'multiple') {
 		        	return '<span class="multiple">' + options.label + ':</span>';
 			}
 		};
 	
 		var adjustExpanderImage = function() {
+			if (options.bootstrap) {
+				return true;
+			}
+			
 			if (options.type == 'simple') {
 				spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
 			
@@ -402,19 +414,21 @@ var ComboAutoBox = {
 	
 		// Global div for combo auto box
 		var generateDivTag = function () {
-			var derivation = ''
+			var klass = 'container-combo-auto-box'
 			if (options.type == 'multiple') {
-				derivation = ' multiple'
+				klass =  klass + ' multiple'
 			} else if (options.type == 'searchable') {
-				derivation = ' searchable'				
+				klass =  klass + ' searchable'				
+			} else if ((options.type == 'simple') && (options.bootstrap)) {
+				klass = klass + '-bootstrap input-group'				
 			}
 		
-		    return '<div class="container-combo-auto-box' + derivation + '">' + generateInputTag() + '</div>';
+		    return '<div class="' + klass + '">' + generateInputTag() + '</div>';
 		};
 	
 		// dialog modal
 		var generateDivDialogModal = function (modalDialogId) {
-		        $('<div id="'+ modalDialogId +'" class="dialog-modal"><div class="head"><span class="label">' + options.label + '</span><span class="close" title="Close">X</span></div><div class="list"><ul></ul></div></div>').appendTo('#' + container);
+		     $('<div id="'+ modalDialogId +'" class="dialog-modal"><div class="head"><span class="label">' + options.label + '</span><span class="close" title="Close">X</span></div><div class="list"><ul></ul></div></div>').appendTo('#' + container);
 	
 			$('#' + modalDialogId + ' > div.head > span.close').click(function() {
 				$('#' + modalDialogId).dialog('close');
@@ -432,9 +446,40 @@ var ComboAutoBox = {
 		
 			$("#" + modalDialogId).siblings('div.ui-dialog-titlebar').remove();
 		
-			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
-				openModalDialog(modalDialogId) 
-			});
+			if ((options.type == 'simple') && (options.bootstrap)) {
+				$('#' + container + ' > div.container-combo-auto-box-bootstrap > span > button').click(function() { 
+					openModalDialog(modalDialogId) 
+				});				
+			} else {
+				$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
+					openModalDialog(modalDialogId) 
+				});
+			}
+		};
+	
+		// dialog modal
+		var generateBootstrapDialogModal = function (modalDialogId) {
+			modal = '<div class="modal fade" id="' + modalDialogId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
+			  '<div class="modal-dialog">' +
+			    '<div class="modal-content">' +
+			      '<div class="modal-header">' +
+			        '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+			        '<h4 class="modal-title">' + options.label + '</h4>' +
+			      '</div>' +
+			      '<div class="modal-body">' +
+					'<div class="list-group" style="overflow:auto;height:440px"></div>' +
+			      '</div>' +
+			    '</div>' +
+			  '</div>' +
+			'</div>';
+			
+		    $(modal).appendTo('#' + container);
+			
+			getListForModalDialog(modalDialogId);
+		
+			$('#' + container + ' > div.container-combo-auto-box-bootstrap > span > button').click(function() { 
+				$('#' + modalDialogId).modal('show');
+			});				
 		};
 	
 		// Selects an item form modal dialog when clicked on
@@ -459,12 +504,20 @@ var ComboAutoBox = {
 	
 		// set list for modal dialog
 		var setListForModalDialog = function (modalDialogId, data) {
+			if (options.bootstrap) {
+				setListForBootstrapModalDialog(modalDialogId, data);
+			} else {
+				setListForSimpleModalDialog(modalDialogId, data);
+			}
+		};
+
+		var setListForSimpleModalDialog = function (modalDialogId, data) {
 			var items = [];
 		
 			$.each(data, function(index){
 				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
 			});
-		
+
 			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 60) + 'px');
 			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
 			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
@@ -484,19 +537,50 @@ var ComboAutoBox = {
 				}
 			});			
 		};
+
+		var setListForBootstrapModalDialog = function (modalDialogId, data) {		
+			var items = [];
+		
+			$.each(data, function(index){
+				items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');
+			});
+
+			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group').html(items.join(''));
+			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a').click(function() {
+				var thisId = $(this).children('span.combo-auto-box-item-id').text();
+				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
+			
+				if (options.type == 'simple') {
+					$('#' + container + ' > div.container-combo-auto-box-bootstrap > input').val(thisLabel);
+					selectData(thisId, thisLabel);
+				} else if (options.type == 'multiple') {
+					$('#' + container + ' > div.container-combo-auto-box > input').val('');
+					addMultipleItem($('#' + container + ' > div.container-combo-auto-box > input').attr('id'), thisId, thisLabel);
+					$('#' + container + ' > div.container-combo-auto-box > input[type="text"]').focus();
+					selectData(thisId, thisLabel);
+				}
+				
+				$('#' + modalDialogId).modal('hide');
+				
+			});			
+		};
 	
 		// opens modal dialog
 		var openModalDialog = function (modalDialogId) {
-		        $('#' + modalDialogId).dialog("open");
+			$('#' + modalDialogId).dialog("open");
 		};
 	
 		// starting generate modial dialog
 		var generateModalDialog = function (textField) {
-			$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box');
+			if (options.bootstrap) {
+				$(generateExpander()).appendTo('#' + container + ' > div.container-combo-auto-box-bootstrap');
+				generateBootstrapDialogModal(generateAnId('model-dialog'));
+			} else {
+				$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box');
+				adjustExpanderImage();				
+				generateDivDialogModal(generateAnId('model-dialog'));
+			}
 	
-			adjustExpanderImage();
-		
-			generateDivDialogModal(generateAnId('model-dialog'));			
 		};
 	
 		// add multiple item
@@ -739,12 +823,20 @@ var ComboAutoBox = {
 			options.not_found_accepted = false;
 		}
 	
+		if (options.bootstrap == null) {
+			options.bootstrap = false;
+		}
+	
 		validLanguage();
 		validType();
 	
 		$('#' + container).html(generateDivTag());
 	
-		textField = $('#' + container + ' > div.container-combo-auto-box > input');
+		if (options.bootstrap) {
+			textField = $('#' + container + ' > div.container-combo-auto-box-bootstrap > input');
+		} else {
+			textField = $('#' + container + ' > div.container-combo-auto-box > input');
+		}
 		bindAutoComplete(textField.attr('id'));
 	
 		if (options.type == 'simple') {
