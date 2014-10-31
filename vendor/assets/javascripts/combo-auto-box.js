@@ -594,7 +594,7 @@ var ComboAutoBox = {
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -625,7 +625,7 @@ var ComboAutoBox = {
 				fieldCondition = '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][p]"           value="'+ predicate['condition'] +'">';
 				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ getSearchableValue(selectedData) +'">';
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
