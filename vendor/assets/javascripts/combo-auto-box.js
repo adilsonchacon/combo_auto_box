@@ -277,6 +277,28 @@ var ComboAutoBox = {
 			return title;
 		};
 		
+		var i18nSelectAll = function (language) {
+			var title = 'Select All';
+			switch(language) {
+				case 'pt-br':
+					title = 'Selecionar Tudo';
+				break;
+				case 'pt':
+					title = 'Selecionar Tudo';
+				break;
+				case 'fr':
+				    title = 'Sélectionner Tout';
+				break;
+				case 'es':
+					title = 'Seleccionar Todo';
+				break;
+				case 'it':
+					title = 'Seleziona Tutto';
+				break;
+			}
+			return title;
+		};
+		
 		// generates text field with html options
 		var generateInputTag = function () {
 			var html = 'input type="text"';
@@ -431,7 +453,18 @@ var ComboAutoBox = {
 	
 		// dialog modal
 		var generateDivDialogModal = function (modalDialogId) {
-		     $('<div id="'+ modalDialogId +'" class="dialog-modal"><div class="head"><span class="label">' + options.label + '</span><span class="close" title="Close">X</span></div><div class="list"><ul></ul></div></div>').appendTo('#' + container);
+		     $('<div id="'+ modalDialogId +'" class="dialog-modal">' + 
+      '<div class="head">' + 
+      '<span class="label">' + options.label + '</span>' +
+      '<span class="close" title="Close">X</span>' +
+      '</div>' +
+      '<div class="list">' +
+      '<ul></ul>' + 
+      '</div>' +
+      '<div class="footer">' +
+      '<a href="javascript:void(0)" class="selectAll">' + i18nSelectAll() + '</a>' + 
+      '</div>' +
+      '</div>').appendTo('#' + container);
 	
 			$('#' + modalDialogId + ' > div.head > span.close').click(function() {
 				$('#' + modalDialogId).dialog('close');
@@ -439,10 +472,12 @@ var ComboAutoBox = {
 	
 			$('#' + modalDialogId).dialog({
 				width: 500,
-				height: 400,
+				height: 412,
 				modal: true,
 				closeOnEscape: true,
 				autoOpen: false,
+        margin: 0,
+        padding: 0,
 			});
 	
 			getListForModalDialog(modalDialogId);
@@ -452,6 +487,10 @@ var ComboAutoBox = {
 			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
 				openModalDialog(modalDialogId) 
 			});
+
+      $('a.selectAll').click(function() {
+        selectAllData(container, modalDialogId);
+      });
 		};
 	
 		// dialog modal
@@ -470,19 +509,24 @@ var ComboAutoBox = {
 			        '<h4 class="modal-title">' + options.label + '</h4>' +
 			      '</div>' +
 			      '<div class="modal-body">' +
-					'<div class="list-group" style="overflow:auto;height:440px"></div>' +
+					    '<div class="list-group" style="overflow:auto;height:440px"></div>' +
 			      '</div>' +
+            ((options.type == 'multiple') ? '<div class="modal-footer"><button id="selectAll" type="button" class="btn btn-primary">' + i18nSelectAll() + '</button></div>' : '') +
 			    '</div>' +
 			  '</div>' +
 			'</div>';
 			
-		    $(modal).appendTo('#' + container);
+		  $(modal).appendTo('#' + container);
 			
 			getListForModalDialog(modalDialogId);
 		
 			$(targetObject).click(function() { 
 				$('#' + modalDialogId).modal('show');
-			});				
+			});
+      
+      $('button#selectAll').click(function() {
+        selectAllData(container, modalDialogId);
+      });
 		};
 	
 		// Selects an item form modal dialog when clicked on
@@ -521,7 +565,7 @@ var ComboAutoBox = {
 				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
 			});
 
-			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 60) + 'px');
+			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 90) + 'px');
 			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
 			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
 				var thisId = $(this).children('span.combo-auto-box-item-id').text();
@@ -814,6 +858,21 @@ var ComboAutoBox = {
 			var matched = value.match(pattern);
 			return matched[1];
 		}
+    
+    var selectAllData = function(container, modalDialogId) {
+      var inputId = $('#' + container + ' > div.container-combo-auto-box > input').attr('id');
+      if (options.bootstrap) {
+        inputId = $('#' + container + ' > div.container-combo-auto-box-bootstrap > input').attr('id');
+        $('#' + modalDialogId).modal('hide');
+      } else {
+        $('#' + modalDialogId).dialog('close');
+      }
+      
+			$.each(options.source, function( index, value ){
+        selectData(value.id, value.label);
+        addMultipleItem(inputId, value.id, value.label);
+			});
+    }
 	
 		// main
 		if (options == null) {
