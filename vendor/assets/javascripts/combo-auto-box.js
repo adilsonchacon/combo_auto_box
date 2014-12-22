@@ -462,7 +462,7 @@ var ComboAutoBox = {
       '<ul></ul>' + 
       '</div>' +
       '<div class="footer">' +
-      '<a href="javascript:void(0)" class="selectAll">' + i18nSelectAll() + '</a>' + 
+      '<a href="javascript:void(0)" class="selectAll">' + i18nSelectAll(options.lang) + '</a>' + 
       '</div>' +
       '</div>').appendTo('#' + container);
 	
@@ -511,7 +511,7 @@ var ComboAutoBox = {
 			      '<div class="modal-body">' +
 					    '<div class="list-group" style="overflow:auto;height:440px"></div>' +
 			      '</div>' +
-            ((options.type == 'multiple') ? '<div class="modal-footer"><button type="button" class="selectAll btn btn-primary">' + i18nSelectAll() + '</button></div>' : '') +
+            ((options.type == 'multiple') ? '<div class="modal-footer"><button type="button" class="selectAll btn btn-primary">' + i18nSelectAll(options.lang) + '</button></div>' : '') +
 			    '</div>' +
 			  '</div>' +
 			'</div>';
@@ -636,9 +636,10 @@ var ComboAutoBox = {
 	
 		// add multiple item
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
-			if (selectedData != '') {
+      var targetId = '#' + options.html.name.replace(/[\[\]]/g, '_') + selectedId;
+			if ((selectedData != '') && ($(targetId).length == 0)) {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'" id=' + options.html.name.replace(/[\[\]]/g, '_') + selectedId + '></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
