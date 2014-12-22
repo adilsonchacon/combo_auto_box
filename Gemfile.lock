@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    combo_auto_box (0.0.21)
+    combo_auto_box (0.0.34)
 
 GEM
   remote: http://rubygems.org/

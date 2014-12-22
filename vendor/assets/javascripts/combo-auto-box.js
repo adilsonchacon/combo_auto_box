@@ -511,7 +511,7 @@ var ComboAutoBox = {
 			      '<div class="modal-body">' +
 					    '<div class="list-group" style="overflow:auto;height:440px"></div>' +
 			      '</div>' +
-            ((options.type == 'multiple') ? '<div class="modal-footer"><button id="selectAll" type="button" class="btn btn-primary">' + i18nSelectAll() + '</button></div>' : '') +
+            ((options.type == 'multiple') ? '<div class="modal-footer"><button type="button" class="selectAll btn btn-primary">' + i18nSelectAll() + '</button></div>' : '') +
 			    '</div>' +
 			  '</div>' +
 			'</div>';
@@ -524,7 +524,7 @@ var ComboAutoBox = {
 				$('#' + modalDialogId).modal('show');
 			});
       
-      $('button#selectAll').click(function() {
+      $('div#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-footer > button.selectAll').click(function() {
         selectAllData(container, modalDialogId);
       });
 		};
