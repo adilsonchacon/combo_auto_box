@@ -326,12 +326,16 @@ var ComboAutoBox = {
 		var generateExpander = function () {
 			if (options.type == 'simple') {
 				if (options.bootstrap) {
-		        	return '<span class="input-group-btn" title="' + i18nShowSearchOptions(options.lang) + '"><button class="btn btn-default" type="button"><i class="glyphicon glyphicon-chevron-down"></i></button></span>';
+		        	return '<span class="input-group-btn" title="' + i18nShowSearchOptions(options.lang) + '"><button class="btn btn-default" type="button"><i class="fa fa-bars"></i></button></span>';
 				} else {
 		        	return '<span class="simple" title="' + i18nShowSearchOptions(options.lang) + '"><i></i></span>';
 				}
 			} else if (options.type == 'multiple') {
-		        return '<span class="multiple">' + options.label + ':</span>';
+        if (options.style == "mail") {
+	        return '<span class="multiple">' + options.label + '</span>';          
+        } else {
+	        return '<span class="multiple-icon"><button class="btn btn-default" type="button"><i class="fa fa-bars"></i></button></span>';          
+        }
 			}
 		};
 	
@@ -892,6 +896,10 @@ var ComboAutoBox = {
 	
 		if (options.bootstrap == null) {
 			options.bootstrap = false;
+		}
+	
+		if (options.style == null) {
+			options.style = "mail";
 		}
 	
 		validLanguage();
