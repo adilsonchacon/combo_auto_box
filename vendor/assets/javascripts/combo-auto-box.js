@@ -672,7 +672,7 @@ var ComboAutoBox = {
 				}
 				fieldAttribute = '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][a][0][name]"  value="'+ predicate['attribute'] +'">';
 				fieldCondition = '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][p]"           value="'+ predicate['condition'] +'">';
-				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ getSearchableValue(selectedData) +'">';
+				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'">';
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
 	
@@ -697,7 +697,7 @@ var ComboAutoBox = {
 		var addSearchableItem = function (inputId, selectedId, selectedData) {			
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ getSearchableValue(selectedData) +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'"></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -747,12 +747,12 @@ var ComboAutoBox = {
 		}
 		
 		var htmlSafe = function(html) {
-			html = html.replace(/\&/, '&amp;');
-			html = html.replace(/\</, '&lt;');
-			html = html.replace(/\>/, '&gt;');
-			html = html.replace(/\"/, '&quot;');
-			html = html.replace(/\'/, '&#x27;');
-			html = html.replace(/\//, '&#x2F;');
+			html = html.replace(/\&/g, '&amp;');
+			html = html.replace(/\</g, '&lt;');
+			html = html.replace(/\>/g, '&gt;');
+			html = html.replace(/\"/g, '&quot;');
+			html = html.replace(/\'/g, '&#x27;');
+			html = html.replace(/\//g, '&#x2F;');
 			
 			return html;
 		}
