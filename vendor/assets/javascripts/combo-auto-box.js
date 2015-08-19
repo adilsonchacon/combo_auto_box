@@ -640,10 +640,10 @@ var ComboAutoBox = {
 	
 		// add multiple item
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
-      var targetId = '#' + options.html.name.replace(/[\[\]]/g, '_') + selectedId;
-			if ((selectedData != '') && ($(targetId).length == 0)) {
+      var targetId = (options.html.name + selectedId).replace(/[^A-Za-z0-9]/g, '_');
+			if ((selectedData != '') && ($('#' + targetId).length == 0)) {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'" id=' + options.html.name.replace(/[\[\]]/g, '_') + selectedId + '></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'" id=' + targetId + '></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
