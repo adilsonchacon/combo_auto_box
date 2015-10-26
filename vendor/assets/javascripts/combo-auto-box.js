@@ -208,7 +208,7 @@ var ComboAutoBox = {
 		// get i18n math comparisons
 		var i18nMath = function (language) {
 			var operators = new Array();
-			switch(language) {
+			switch(language.toLowerCase()) {
 				case 'en':
 					operators = [ { id: 'cont', label: 'contains' }, { id: 'eq', label: 'equal' }, { id: 'gteq', label: 'greater or equal' }, { id: 'lteq', label: 'less or equal' } ];
 				break;
@@ -235,7 +235,7 @@ var ComboAutoBox = {
 
 		var i18nShowSearchOptions = function (language) {
 			var title = 'Show search options';
-			switch(language) {
+			switch(language.toLowerCase()) {
 				case 'pt-br':
 					title = 'Exibir opções de busca';
 				break;
@@ -257,7 +257,7 @@ var ComboAutoBox = {
 
 		var i18nSourceNotFound = function (language) {
 			var title = 'not found';
-			switch(language) {
+			switch(language.toLowerCase()) {
 				case 'pt-br':
 					title = 'não encontrado';
 				break;
@@ -279,7 +279,7 @@ var ComboAutoBox = {
 		
 		var i18nSelectAll = function (language) {
 			var title = 'Select All';
-			switch(language) {
+			switch(language.toLowerCase()) {
 				case 'pt-br':
 					title = 'Selecionar Tudo';
 				break;
@@ -792,7 +792,7 @@ var ComboAutoBox = {
 	
 		// valid language or set 'en' as default
 		var validLanguage = function () {
-			var langs = ['math', 'en', 'pt-br', 'pt', 'es', 'fr'];
+			var langs = ['math', 'en', 'pt-br', 'pt', 'es', 'fr', 'it'];
 			for(var i=0; i<langs.length;i++) {
 				if (options.lang == langs[i]) {
 					return true;
