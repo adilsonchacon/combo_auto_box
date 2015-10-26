@@ -794,9 +794,13 @@ var ComboAutoBox = {
 		var validLanguage = function () {
 			var langs = ['math', 'en', 'pt-br', 'pt', 'es', 'fr', 'it'];
 			for(var i=0; i<langs.length;i++) {
-				if (options.lang.toLowerCase() == langs[i]) {
-					return true;
-				}
+        try {
+				  if (options.lang.toLowerCase() == langs[i]) {
+					  return true;
+				  }
+        } catch (error) {
+          
+        }
 			}
 		
 			options.lang = 'en';
