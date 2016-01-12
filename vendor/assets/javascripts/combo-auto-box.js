@@ -526,6 +526,8 @@ var ComboAutoBox = {
 		
 			$(targetObject).click(function() { 
 				$('#' + modalDialogId).modal('show');
+        // fix to allways show back-shadow
+        $('.modal-backdrop').css('z-index', parseInt($('#' + modalDialogId).css("z-index")) - 1);
 			});
       
       $('div#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-footer > button.selectAll').click(function() {
