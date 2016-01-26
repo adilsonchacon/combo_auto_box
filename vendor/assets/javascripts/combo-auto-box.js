@@ -658,10 +658,11 @@ var ComboAutoBox = {
 	
 		// add multiple item
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
+      console.log(selectedId);
       var targetId = (options.html.name + selectedId).replace(/[^A-Za-z0-9]/g, '_');
 			if ((selectedData != '') && ($('#' + targetId).length == 0)) {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ selectedId +'" id=' + targetId + '></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ htmlSafe(selectedId.toString()) +'" id=' + targetId + '></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -715,7 +716,7 @@ var ComboAutoBox = {
 		var addSearchableItem = function (inputId, selectedId, selectedData) {			
 			if (selectedData != '') {
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ selectedId +'][]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'"></div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ htmlSafe(selectedId.toString()) +'][]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'"></div>');
 	
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -774,7 +775,7 @@ var ComboAutoBox = {
 			
 			return html;
 		}
-			
+    
 		//  Bind click on div for multiple or searchble
 		var bindContainerClick = function(inputId) {
 			$('#' + container + ' > div.multiple').click(function() {
