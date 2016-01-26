@@ -519,19 +519,35 @@ var ComboAutoBox = {
 			    '</div>' +
 			  '</div>' +
 			'</div>';
-			
-		  $(modal).appendTo('#' + container);
+
+      if (options.appendModalTo != null) {
+  		  $(modal).appendTo(options.appendModalTo);
+      } else {
+  		  $(modal).appendTo('#' + container);
+      }
 			
 			getListForModalDialog(modalDialogId);
 		
-			$(targetObject).click(function() { 
-				$('#' + modalDialogId).modal('show');
+			$(targetObject).click(function() {
+  			$('#' + modalDialogId).modal('show');
         // fix to allways show back-shadow
         $('.modal-backdrop').css('z-index', parseInt($('#' + modalDialogId).css("z-index")) - 1);
 			});
       
       $('div#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-footer > button.selectAll').click(function() {
         selectAllData(container, modalDialogId);
+      });
+      
+      $('#' + modalDialogId).on('hide.bs.modal', function (e) {
+        if (options.onHideModal != null) {
+          options.onHideModal();
+        }
+      });
+
+      $('#' + modalDialogId).on('show.bs.modal', function (e) {
+        if (options.onShowModal != null) {
+          options.onShowModal();
+        }
       });
 		};
 	
