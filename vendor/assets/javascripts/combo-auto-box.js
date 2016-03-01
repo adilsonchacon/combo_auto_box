@@ -531,7 +531,11 @@ var ComboAutoBox = {
 			$(targetObject).click(function() {
   			$('#' + modalDialogId).modal('show');
         // fix to allways show back-shadow
-        $('.modal-backdrop').css('z-index', parseInt($('#' + modalDialogId).css("z-index")) - 1);
+        if ($('.modal-backdrop').css('z-index').toString() != '0') {
+          $('.modal-backdrop').css('z-index', parseInt($('#' + modalDialogId).css("z-index")) - 1);
+        }
+        // alert($('.modal-backdrop').css('z-index'));
+        // alert($('.modal').css('z-index'));
 			});
       
       $('div#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-footer > button.selectAll').click(function() {
