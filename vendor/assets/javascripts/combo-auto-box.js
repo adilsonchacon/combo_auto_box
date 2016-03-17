@@ -530,8 +530,10 @@ var ComboAutoBox = {
 		
 			$(targetObject).click(function() {
   			$('#' + modalDialogId).modal('show');
+
         // fix to allways show back-shadow
-        if ($('.modal-backdrop').css('z-index').toString() != '0') {
+        var zIndex = $('.modal-backdrop').css('z-index').toString();
+        if ((zIndex != '0') && (zIndex != 'auto')) {
           $('.modal-backdrop').css('z-index', parseInt($('#' + modalDialogId).css("z-index")) - 1);
         }
         // alert($('.modal-backdrop').css('z-index'));
