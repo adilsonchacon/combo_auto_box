@@ -1,4 +1,6 @@
 span.combo-auto-box-item-id { display:none; }
+div.modal > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a.selected { color:#CDCDCD; }
+div.modal > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a.selected:hover { color:#CDCDCD; cursor:default; }
 
 div.multiple { border: 1px solid #CDCDCD; display:table; width:100%; padding: 2px 6px; }
 div.multiple:hover {cursor:text}

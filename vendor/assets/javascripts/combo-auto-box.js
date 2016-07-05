@@ -454,6 +454,40 @@ var ComboAutoBox = {
 		
 		    return '<div class="' + klass + '">' + generateInputTag() + '</div>';
 		};
+
+    var disableSelectionIfAlreadySelected = function() {
+      if (options.bootstrap) {
+        disableSelectionIfAlreadySelectedBootstrap();
+      } else {
+        disableSelectionIfAlreadySelectedSimple();
+      }
+    }
+    
+    var disableSelectionIfAlreadySelectedBootstrap = function() {
+      var selecteds = $("div#" + container + " > div.container-combo-auto-box-bootstrap > div.item > input[type='hidden']").map(function(k, v) { return $(this).val() });
+
+      $("div#" + container + " > div.modal > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a").each(function(index) {
+        var item = $(this).children('span.combo-auto-box-item-id').text();
+        $(this).removeClass('selected');
+        if ($.inArray(item, selecteds) >= 0) { // IF exists in array
+          $(this).addClass('selected');
+        } else {
+        }    
+      });      
+    }
+
+    var disableSelectionIfAlreadySelectedSimple = function() {
+      var selecteds = $("div#" + container + " > div.container-combo-auto-box > div.item > input[type='hidden']").map(function(k, v) { return $(this).val() });
+      
+      $('#' + options.modalId + ' > div.list > ul > li').each(function(index) {
+        var item = $(this).children('span.combo-auto-box-item-id').text();
+        $(this).removeClass('selected');
+        if ($.inArray(item, selecteds) >= 0) { // IF exists in array
+          $(this).addClass('selected');
+        } else {
+        }    
+      });      
+    }
 	
 		// dialog modal
 		var generateDivDialogModal = function (modalDialogId) {
@@ -489,6 +523,8 @@ var ComboAutoBox = {
 			$("#" + modalDialogId).siblings('div.ui-dialog-titlebar').remove();
 		
 			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
+        disableSelectionIfAlreadySelected();
+
 				openModalDialog(modalDialogId) 
 			});
 
@@ -529,6 +565,8 @@ var ComboAutoBox = {
 			getListForModalDialog(modalDialogId);
 		
 			$(targetObject).click(function() {
+        disableSelectionIfAlreadySelected();
+        
   			$('#' + modalDialogId).modal('show');
 
         // fix to allways show back-shadow
@@ -596,6 +634,10 @@ var ComboAutoBox = {
 			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 90) + 'px');
 			$('#' + modalDialogId + ' > div.list > ul').html(items.join(''));
 			$('#' + modalDialogId + ' > div.list > ul > li').click(function() {
+        if ($(this).hasClass('selected')) {
+          return false;
+        }
+
 				var thisId = $(this).children('span.combo-auto-box-item-id').text();
 				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
 			
@@ -617,11 +659,15 @@ var ComboAutoBox = {
 			var items = [];
 		
 			$.each(data, function(index){
-				items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');
+  			items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');          
 			});
 
 			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group').html(items.join(''));
 			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a').click(function() {
+        if ($(this).hasClass('selected')) {
+          return false;
+        }
+        
 				var thisId = $(this).children('span.combo-auto-box-item-id').text();
 				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
 			
@@ -647,24 +693,24 @@ var ComboAutoBox = {
 	
 		// starting generate modial dialog
 		var generateModalDialog = function (textField) {
+      options['modalId'] = generateAnId('model-dialog')
 			if (options.bootstrap) {
 				if (options.type == 'simple') {
 					$(generateExpander()).appendTo('#' + container + ' > div.container-combo-auto-box-bootstrap');					
 				} else {
 					$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box-bootstrap');					
 				}
-				generateBootstrapDialogModal(generateAnId('model-dialog'));
+				generateBootstrapDialogModal(options['modalId']);
 			} else {
 				$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box');
 				adjustExpanderImage();				
-				generateDivDialogModal(generateAnId('model-dialog'));
+				generateDivDialogModal(options['modalId']);
 			}
 	
 		};
 	
 		// add multiple item
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
-      console.log(selectedId);
       var targetId = (options.html.name + selectedId).replace(/[^A-Za-z0-9]/g, '_');
 			if ((selectedData != '') && ($('#' + targetId).length == 0)) {
 				var id = generateAnId('item');

@@ -35,6 +35,9 @@ div.dialog-modal div.list ul { list-style:none; width:100%; height:100px; float:
 div.dialog-modal div.list ul li { padding: 5px 0 5px 3px; margin-left:0px; width:100%; border-bottom:1px solid #DCDCDC; font-size:12px; }
 div.dialog-modal div.list ul li:hover { cursor:pointer; text-decoration:underline; background-color:#F9F9F9; }
 
+div.dialog-modal div.list ul li.selected { padding: 5px 0 5px 3px; margin-left:0px; width:100%; border-bottom:1px solid #DCDCDC; font-size:12px; color:#CDCDCD;}
+div.dialog-modal div.list ul li.selected:hover { cursor:default; }
+
 div.dialog-modal div.footer { display:table; width:99%; float:left; margin-top:12px; text-align: right;}
 
 /*div.dialog-modal div.head { display:block; width:99%; position:absolute; z-index:2002; top:0px; left:0px; border: 1px solid #000; background-color:#CECECE; height:30px; -moz-border-radius:4px;-webkit-border-radius:4px;}
