@@ -20,6 +20,32 @@ var ComboAutoBox = {
 	
 			return prefix + "-" + now;
 		};
+    
+    var splitValidEmails = function (inputId, inputValue) {
+      if ((options.type != 'multiple') || (!options.email)) {
+        return false;
+      }
+
+      var emails = inputValue.split(/[\,\s\;]+/);
+      for (var i = 0; i < emails.length; i++) {
+        if (!emails[i].match(/[^@\s]+@([^@\s]+\.)+[^@\s]+/)) {
+          return false;
+        }
+      }
+
+      $('#' + inputId).autocomplete( "close" );
+      if ((options.source_not_found) && (!options.not_found_accepted)) {
+        selectData('', '');
+      } else {
+        for (var i = 0; i < emails.length; i++) {
+          addMultipleItem(inputId, emails[i], emails[i]);
+          selectData(emails[i], emails[i]);
+        }
+      }
+      $('#' + inputId).val('');
+
+      return true;
+    }
 	
 		// binds autocomplete to text field
 		var bindAutoComplete = function (inputId) {
@@ -52,9 +78,32 @@ var ComboAutoBox = {
 				}
 				
 			});
-		
+      
+      // CTRL+V or CMD+V
+      $('#' + inputId).bind('paste', function() {
+        var $this = $(this);
+        setTimeout(function(){
+          splitValidEmails(inputId, $this.val());
+        }, 20); //just break the callstack to let the event finish
+
+      }); 
+      		
 			$('#' + inputId).keypress(function(e) {
-				if ((e.which === 13) && ($('#' + inputId).val() != '')) {
+        // 44 is ","  -  32 is SPACE  -  59 is ";"
+				if (((e.which === 32) || (e.which === 44) || (e.which === 59)) && (options.type == 'multiple') && (options.email) && ($('#' + inputId).val().match(/[^@\s]+@([^@\s]+\.)+[^@\s]+/))) {
+					$('#' + inputId).autocomplete( "close" );
+					if ((options.source_not_found) && (!options.not_found_accepted)) {
+						$('#' + inputId).val('');
+					} else {
+						addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
+					}
+					selectData($('#' + inputId).val(), $('#' + inputId).val());
+
+          setTimeout(function(){
+            $('#' + inputId).val('');
+          }, 20);
+					
+  			} else if ((e.which === 13) && ($('#' + inputId).val() != '')) {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
@@ -67,9 +116,9 @@ var ComboAutoBox = {
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
 						if ((options.source_not_found) && (!options.not_found_accepted)) {
-							$('#' + inputId).val('');							
+							$('#' + inputId).val('');
 						} else {
-							addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());							
+							addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
 						}
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 						$('#' + inputId).val('');
@@ -975,6 +1024,10 @@ var ComboAutoBox = {
 	
 		if (options.style == null) {
 			options.style = "mail";
+		}
+	
+		if (options.email == null) {
+			options.email = false
 		}
 	
 		validLanguage();

@@ -2,25 +2,25 @@ span.combo-auto-box-item-id { display:none; }
 div.modal > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a.selected { color:#CDCDCD; }
 div.modal > div.modal-dialog > div.modal-content > div.modal-body > div.list-group > a.selected:hover { color:#CDCDCD; cursor:default; }
 
-div.multiple { border: 1px solid #CDCDCD; display:table; width:100%; padding: 2px 6px; }
-div.multiple:hover {cursor:text}
-div.multiple span.multiple-icon { float:right; }
+div.multiple { border: 1px solid #CDCDCD; display:table; width:100%; padding: 0px; }
+div.multiple:hover { cursor:text }
+div.multiple span.multiple-icon { float:right; border-radius: 0em;}
 div.multiple span.multiple-icon:hover { cursor:pointer; }
 div.multiple span.multiple { font-family: inherit; float:left; font-size: 18px; color:#9A9A9A; margin: 1px 2px 2px 2px; padding:2px 10px 2px 10px; vertical-align: middle; }
 div.multiple span.multiple:hover { cursor:pointer; }
-div.multiple input { border: 0px; float:left; min-height:22px; font-size:15px; margin-top:2px; }
-div.multiple input:focus { outline:none; }
-div.multiple div.item { font-family: arial,sans-serif; float:left; font-size: 15px; color:#000000; background-color:#EDEDED; margin: 2px 10px 2px 2px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; }
+div.multiple div.item { font-family: arial,sans-serif; float:left; font-size: 15px; color:#000000; background-color:#EDEDED; margin: 3px 10px 2px 2px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; }
 div.multiple div.item:hover { cursor:default; }
 div.multiple div.item span { margin-left:10px; color:#CCCCCC; }
-div.multiple div.item span.remove_item { font-weight:none; color:#ADADAD;}
-div.multiple div.item span:hover { color:#6D6D6D; cursor:pointer;}
-
+div.multiple div.item span.remove_item { font-weight:none; color:#ADADAD; }
+div.multiple div.item span:hover { color:#6D6D6D; cursor:pointer; }
+div.multiple input { border: 0px; float:left; min-height:22px; font-size:13px; margin-top:5px; margin-left:11px; }
+div.multiple input:focus { outline:none; }
+  
 div.searchable { border: 1px solid #CDCDCD; display:table; width:100%; padding: 2px 6px; }
 div.searchable:hover {cursor:text}
 div.searchable input { border: 0px; float:left; min-height:22px; font-size:15px; margin-top:2px; }
 div.searchable input:focus { outline:none; }
-div.searchable div.item { font-family: inherit; float:left; font-size: 15px; color:#FFFFFF; background-color:#008000; margin: 2px 10px 2px 2px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; font-weight:bold; }
+div.searchable div.item { font-family: inherit; float:left; font-size: 15px; color:#FFFFFF; background-color:#008000; margin: 2px 8px 3px 4px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; font-weight:bold; }
 div.searchable div.item:hover { cursor:default; }
 div.searchable div.item span { margin-left:10px; color:#CCCCCC; }
 div.searchable div.item span.remove_item { font-weight:none; color:#AAAAAA;}
