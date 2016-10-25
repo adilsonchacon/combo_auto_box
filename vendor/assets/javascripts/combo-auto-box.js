@@ -1002,6 +1002,8 @@ var ComboAutoBox = {
         addMultipleItem(inputId, value.id, value.label);
 			});
     }
+
+		validLanguage();
 	
 		// main
 		if (options == null) {
@@ -1030,7 +1032,6 @@ var ComboAutoBox = {
 			options.email = false
 		}
 	
-		validLanguage();
 		validType();
 	
 		$('#' + container).html(generateDivTag());
