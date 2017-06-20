@@ -1,7 +1,17 @@
 var ComboAutoBox = {
 	// constructor
 	addTo: function (container, options) {
-		var htmlSafe = function(html) {
+		// generatea an ID based on current time
+		var generateShortId = function(prefix) {
+			var now = 0;
+			while ($('input[name*="[' + prefix +"-" + now + ']"]').length != 0) {
+				now++;
+			}
+
+			return prefix + "-" + now;
+		};
+
+    var htmlSafe = function(html) {
 			html = html.toString();
 			html = html.replace(/\&/g, '&amp;');
 			html = html.replace(/\</g, '&lt;');
@@ -13,21 +23,10 @@ var ComboAutoBox = {
 			return html;
 		}
 
-		// generatea an ID based on current time
-		var generateShortId = function(prefix) {
-			var now = 0;
-			while ($('input[name*="[' + prefix +"-" + now + ']"]').length != 0) {
-				now++;
-			}
-
-			return prefix + "-" + now;
-		};
-
-		$.each(options.source, function( index, value ){
+    $.each(options.source, function( index, value ){
 			options.source[index]['id'] = htmlSafe(options.source[index]['id']);
 			options.source[index]['label'] = htmlSafe(options.source[index]['label']);
 		});
-
 
 		// generatea an ID based on current time
 		var generateAnId = function(prefix) {
@@ -882,6 +881,17 @@ var ComboAutoBox = {
 					return conditions[i]['label'];
 				}
 			}
+		}
+
+		var htmlSafe = function(html) {
+			html = html.replace(/\&/g, '&amp;');
+			html = html.replace(/\</g, '&lt;');
+			html = html.replace(/\>/g, '&gt;');
+			html = html.replace(/\"/g, '&quot;');
+			html = html.replace(/\'/g, '&#x27;');
+			html = html.replace(/\//g, '&#x2F;');
+
+			return html;
 		}
 
 		//  Bind click on div for multiple or searchble
