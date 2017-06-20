@@ -2,6 +2,7 @@ var ComboAutoBox = {
 	// constructor
 	addTo: function (container, options) {
 		var htmlSafe = function(html) {
+			html = html.toString();
 			html = html.replace(/\&/g, '&amp;');
 			html = html.replace(/\</g, '&lt;');
 			html = html.replace(/\>/g, '&gt;');
@@ -12,8 +13,6 @@ var ComboAutoBox = {
 			return html;
 		}
 
-		options.source = htmlSafe(options.source)
-
 		// generatea an ID based on current time
 		var generateShortId = function(prefix) {
 			var now = 0;
@@ -23,6 +22,12 @@ var ComboAutoBox = {
 
 			return prefix + "-" + now;
 		};
+
+		$.each(options.source, function( index, value ){
+			options.source[index]['id'] = htmlSafe(options.source[index]['id']);
+			options.source[index]['label'] = htmlSafe(options.source[index]['label']);
+		});
+
 
 		// generatea an ID based on current time
 		var generateAnId = function(prefix) {
