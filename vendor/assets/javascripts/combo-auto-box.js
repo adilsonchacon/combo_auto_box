@@ -11,23 +11,6 @@ var ComboAutoBox = {
 			return prefix + "-" + now;
 		};
 
-    var htmlSafe = function(html) {
-			html = html.toString();
-			html = html.replace(/\&/g, '&amp;');
-			html = html.replace(/\</g, '&lt;');
-			html = html.replace(/\>/g, '&gt;');
-			html = html.replace(/\"/g, '&quot;');
-			html = html.replace(/\'/g, '&#x27;');
-			html = html.replace(/\//g, '&#x2F;');
-
-			return html;
-		}
-
-    $.each(options.source, function( index, value ){
-			options.source[index]['id'] = htmlSafe(options.source[index]['id']);
-			options.source[index]['label'] = htmlSafe(options.source[index]['label']);
-		});
-
 		// generatea an ID based on current time
 		var generateAnId = function(prefix) {
 			var now = new Date().getTime();
@@ -694,7 +677,7 @@ var ComboAutoBox = {
 			var items = [];
 
 			$.each(data, function(index){
-				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
+				items.push('<li><span class="combo-auto-box-item-id">' + htmlSafe(data[index].id) +'</span><span class="combo-auto-box-item-label">'+ htmlSafe(data[index].label) + '</span></li>');
 			});
 
 			$('#' + modalDialogId + ' > div.list').css('height', ($('#' + modalDialogId).dialog("option", "height") - 90) + 'px');
@@ -725,7 +708,7 @@ var ComboAutoBox = {
 			var items = [];
 
 			$.each(data, function(index){
-  			items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');
+  			items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + htmlSafe(data[index].id) +'</span><span class="combo-auto-box-item-label">'+ htmlSafe(data[index].label) + '</span></a>');
 			});
 
 			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group').html(items.join(''));
@@ -884,6 +867,7 @@ var ComboAutoBox = {
 		}
 
 		var htmlSafe = function(html) {
+      html = html.toString();
 			html = html.replace(/\&/g, '&amp;');
 			html = html.replace(/\</g, '&lt;');
 			html = html.replace(/\>/g, '&gt;');
