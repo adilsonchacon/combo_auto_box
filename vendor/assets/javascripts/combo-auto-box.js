@@ -7,9 +7,26 @@ var ComboAutoBox = {
 			while ($('input[name*="[' + prefix +"-" + now + ']"]').length != 0) {
 				now++;
 			}
-	
+
 			return prefix + "-" + now;
 		};
+
+    var htmlSafe = function(html) {
+			html = html.toString();
+			html = html.replace(/\&/g, '&amp;');
+			html = html.replace(/\</g, '&lt;');
+			html = html.replace(/\>/g, '&gt;');
+			html = html.replace(/\"/g, '&quot;');
+			html = html.replace(/\'/g, '&#x27;');
+			html = html.replace(/\//g, '&#x2F;');
+
+			return html;
+		}
+
+    $.each(options.source, function( index, value ){
+			options.source[index]['id'] = htmlSafe(options.source[index]['id']);
+			options.source[index]['label'] = htmlSafe(options.source[index]['label']);
+		});
 
 		// generatea an ID based on current time
 		var generateAnId = function(prefix) {
@@ -17,10 +34,10 @@ var ComboAutoBox = {
 			while ($("#" + prefix +"-" + now).length != 0) {
 				now++;
 			}
-	
+
 			return prefix + "-" + now;
 		};
-    
+
     var splitValidEmails = function (inputId, inputValue) {
       if ((options.type != 'multiple') || (!options.email)) {
         return false;
@@ -46,7 +63,7 @@ var ComboAutoBox = {
 
       return true;
     }
-	
+
 		// binds autocomplete to text field
 		var bindAutoComplete = function (inputId) {
 			var previuosValue = '';
@@ -62,7 +79,7 @@ var ComboAutoBox = {
 					if (!options.not_found_accepted) {
 						$('#' + inputId).val('');
 					}
-					selectData($('#' + inputId).val(), $('#' + inputId).val());					
+					selectData($('#' + inputId).val(), $('#' + inputId).val());
 					return true;
 				} else if ((e.keyCode == 9) && (inputVal != '') && (options.source_not_found) && (options.type == 'multiple')) {
 					$('#' + inputId).autocomplete( "close");
@@ -76,9 +93,9 @@ var ComboAutoBox = {
 					$('#' + inputId).val('');
 					return true;
 				}
-				
+
 			});
-      
+
       // CTRL+V or CMD+V
       $('#' + inputId).bind('paste', function() {
         var $this = $(this);
@@ -86,8 +103,8 @@ var ComboAutoBox = {
           splitValidEmails(inputId, $this.val());
         }, 20); //just break the callstack to let the event finish
 
-      }); 
-      		
+      });
+
 			$('#' + inputId).keypress(function(e) {
         // 44 is ","  -  32 is SPACE  -  59 is ";"
 				if (((e.which === 32) || (e.which === 44) || (e.which === 59)) && (options.type == 'multiple') && (options.email) && ($('#' + inputId).val().match(/[^@\s]+@([^@\s]+\.)+[^@\s]+/))) {
@@ -102,7 +119,7 @@ var ComboAutoBox = {
           setTimeout(function(){
             $('#' + inputId).val('');
           }, 20);
-					
+
   			} else if ((e.which === 13) && ($('#' + inputId).val() != '')) {
 					if (options.type == 'full') {
 						$('#' + inputId).autocomplete( "close" );
@@ -130,16 +147,16 @@ var ComboAutoBox = {
 							selectData(item.id, item.label);
 							$('#' + inputId).val('');
 						} catch (error) {
-							
+
 						}
 					}
-					
+
 					return false;
 				} else if ((e.which === 13) && ($('#' + inputId).val() == '')) {
-					return false;					
+					return false;
 				}
 			});
-			
+
 			$('#' + inputId).autocomplete({
 				source: setAutoCompleteSource(inputId),
 				select: function(event, ui) {
@@ -177,7 +194,7 @@ var ComboAutoBox = {
 				},
 				search: function(event, ui) {
 					if (options.type == 'searchable') {
-						$('#' + inputId).autocomplete("option", { source: setAutoCompleteSource(inputId) }); 
+						$('#' + inputId).autocomplete("option", { source: setAutoCompleteSource(inputId) });
 					}
 				},
 				change: function (event, ui) {
@@ -191,7 +208,7 @@ var ComboAutoBox = {
 				},
 			});
 		};
-	
+
 		// set autocomplete source
 		var setAutoCompleteSource = function (inputId) {
 			if (options.type == 'searchable') {
@@ -238,7 +255,7 @@ var ComboAutoBox = {
 			options.source_not_found = true;
 			return [ { id: $('#' + inputId).val(), label: '"' + $('#' + inputId).val() + '" ' + options.not_found_message } ];
 		}
-		
+
 		// source items for searchable
 		var sourceForSearchable = function (inputId) {
 			var new_source = new Array();
@@ -251,9 +268,9 @@ var ComboAutoBox = {
 					}
 				});
 			});
-			return new_source;			
+			return new_source;
 		}
-	
+
 		// get i18n math comparisons
 		var i18nMath = function (language) {
 			var operators = new Array();
@@ -325,7 +342,7 @@ var ComboAutoBox = {
 			}
 			return title;
 		};
-		
+
 		var i18nSelectAll = function (language) {
 			var title = 'Select All';
 			switch(language.toLowerCase()) {
@@ -347,7 +364,7 @@ var ComboAutoBox = {
 			}
 			return title;
 		};
-		
+
 		// generates text field with html options
 		var generateInputTag = function () {
 			var html = 'input type="text"';
@@ -359,18 +376,18 @@ var ComboAutoBox = {
 		    		html = html + ' '+ key +'="' + value + '"';
 				});
 			}
-	
+
 			if ((options.html == null) || (options.html.id == null)) {
 			    html = html + ' id="' + generateAnId('combo-auto-box') + '"';
 			}
-			
+
 			if ((options.bootstrap) && (options.type == "simple")) {
 				html = html + ' class="form-control" '
 			}
-	
+
 		    return '<' + html + '>';
 		};
-	
+
 		// On click opens modal image tag inside "i" tag through css
 		var generateExpander = function () {
 			if (options.type == 'simple') {
@@ -381,21 +398,21 @@ var ComboAutoBox = {
 				}
 			} else if (options.type == 'multiple') {
         if (options.style == "mail") {
-	        return '<span class="multiple">' + options.label + '</span>';          
+	        return '<span class="multiple">' + options.label + '</span>';
         } else {
-	        return '<span class="multiple-icon"><button class="btn btn-default" type="button"><i class="fa fa-bars"></i></button></span>';          
+	        return '<span class="multiple-icon"><button class="btn btn-default" type="button"><i class="fa fa-bars"></i></button></span>';
         }
 			}
 		};
-	
+
 		var adjustExpanderImage = function() {
 			if ((options.bootstrap) && (options.type == "simple")) {
 				return true;
 			}
-			
+
 			if (options.type == 'simple') {
 				spanTag = $('#' + container + ' > div.container-combo-auto-box > span.simple');
-			
+
 				inputWidth = getTextFieldWidth(textField);
 				inputHeight = getTextFieldHeight(textField);
 
@@ -405,18 +422,18 @@ var ComboAutoBox = {
 				if (inputHeight % 2 != 0) {
 					inputBorderTop = inputBorderTop + 2;
 				}
-			
+
 				iWidth = 20;
 				if (inputWidth < 20) {
 					iWidth = 10;
 				}
-			
+
 				spanTag.css('margin-top', inputBorderTop.toString() + 'px');
 				spanTag.css('margin-left', (inputWidth - iWidth + 4).toString() + 'px');
 
 				spanTag.children(':first').css('width', iWidth.toString() + 'px');
 				spanTag.children(':first').css('height', inputHeight.toString() + 'px');
-		
+
 				return true;
 			} else if (options.type == 'multiple') {
 				inputTop = 0;
@@ -436,7 +453,7 @@ var ComboAutoBox = {
 
 		var getTextFieldWidth = function (textField) {
 			var widthTotal = 0;
-			
+
 			if (textField.width() != null) {
 				widthTotal = widthTotal + textField.width();
 			}
@@ -445,10 +462,10 @@ var ComboAutoBox = {
 				padding_right = textField.css('padding-right').toString().replace(/[a-zA-Z]+/g, '');
 				widthTotal = widthTotal + parseInt(padding_right);
 			}
-			
+
 			return widthTotal;
 		}
-		
+
 		var getTextFieldBorder = function (textField, side) {
 			var heightTotal = 0;
 
@@ -460,10 +477,10 @@ var ComboAutoBox = {
 
 			return heightTotal;
 		}
-		
+
 		var getTextFieldHeight = function (textField) {
 			var heightTotal = 0;
-			
+
 			try {
 				if (textField.height() != null) {
 					heightTotal = heightTotal + textField.height();
@@ -476,17 +493,17 @@ var ComboAutoBox = {
 					heightTotal = heightTotal + parseInt(padding_top);
 				}
 			} catch (error) {}
-			
+
 			try {
 				if (textField.css('padding-bottom') != null) {
 					padding_bottom = textField.css('padding-bottom').toString().replace(/[a-zA-Z]+/g, '');
 					heightTotal = heightTotal + parseInt(padding_bottom);
 				}
 			} catch (error) {}
-			
+
 			return heightTotal;
 		}
-	
+
 		// Global div for combo auto box
 		var generateDivTag = function () {
 			var klass = 'container-combo-auto-box'
@@ -496,11 +513,11 @@ var ComboAutoBox = {
 				}
 				klass =  klass + ' multiple';
 			} else if (options.type == 'searchable') {
-				klass =  klass + ' searchable'				
+				klass =  klass + ' searchable'
 			} else if ((options.type == 'simple') && (options.bootstrap)) {
-				klass = klass + '-bootstrap input-group'				
+				klass = klass + '-bootstrap input-group'
 			}
-		
+
 		    return '<div class="' + klass + '">' + generateInputTag() + '</div>';
 		};
 
@@ -511,7 +528,7 @@ var ComboAutoBox = {
         disableSelectionIfAlreadySelectedSimple();
       }
     }
-    
+
     var disableSelectionIfAlreadySelectedBootstrap = function() {
       var selecteds = $("div#" + container + " > div.container-combo-auto-box-bootstrap > div.item > input[type='hidden']").map(function(k, v) { return $(this).val() });
 
@@ -521,42 +538,42 @@ var ComboAutoBox = {
         if ($.inArray(item, selecteds) >= 0) { // IF exists in array
           $(this).addClass('selected');
         } else {
-        }    
-      });      
+        }
+      });
     }
 
     var disableSelectionIfAlreadySelectedSimple = function() {
       var selecteds = $("div#" + container + " > div.container-combo-auto-box > div.item > input[type='hidden']").map(function(k, v) { return $(this).val() });
-      
+
       $('#' + options.modalId + ' > div.list > ul > li').each(function(index) {
         var item = $(this).children('span.combo-auto-box-item-id').text();
         $(this).removeClass('selected');
         if ($.inArray(item, selecteds) >= 0) { // IF exists in array
           $(this).addClass('selected');
         } else {
-        }    
-      });      
+        }
+      });
     }
-	
+
 		// dialog modal
 		var generateDivDialogModal = function (modalDialogId) {
-		     $('<div id="'+ modalDialogId +'" class="dialog-modal">' + 
-      '<div class="head">' + 
+		     $('<div id="'+ modalDialogId +'" class="dialog-modal">' +
+      '<div class="head">' +
       '<span class="label">' + options.label + '</span>' +
       '<span class="close" title="Close">X</span>' +
       '</div>' +
       '<div class="list">' +
-      '<ul></ul>' + 
+      '<ul></ul>' +
       '</div>' +
       '<div class="footer">' +
-      '<a href="javascript:void(0)" class="selectAll">' + i18nSelectAll(options.lang) + '</a>' + 
+      '<a href="javascript:void(0)" class="selectAll">' + i18nSelectAll(options.lang) + '</a>' +
       '</div>' +
       '</div>').appendTo('#' + container);
-	
+
 			$('#' + modalDialogId + ' > div.head > span.close').click(function() {
 				$('#' + modalDialogId).dialog('close');
 			});
-	
+
 			$('#' + modalDialogId).dialog({
 				width: 500,
 				height: 412,
@@ -566,26 +583,26 @@ var ComboAutoBox = {
         margin: 0,
         padding: 0,
 			});
-	
+
 			getListForModalDialog(modalDialogId);
-		
+
 			$("#" + modalDialogId).siblings('div.ui-dialog-titlebar').remove();
-		
-			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() { 
+
+			$('#' + container + ' > div.container-combo-auto-box > span.' + options.type).click(function() {
         disableSelectionIfAlreadySelected();
 
-				openModalDialog(modalDialogId) 
+				openModalDialog(modalDialogId)
 			});
 
       $('a.selectAll').click(function() {
         selectAllData(container, modalDialogId);
       });
 		};
-	
+
 		// dialog modal
 		var generateBootstrapDialogModal = function (modalDialogId) {
 			var targetObject = ('#' + container + ' > div.container-combo-auto-box-bootstrap > span');
-			
+
 			if (options.type == "simple") {
 				targetObject = targetObject + ' > button';
 			}
@@ -610,12 +627,12 @@ var ComboAutoBox = {
       } else {
   		  $(modal).appendTo('#' + container);
       }
-			
+
 			getListForModalDialog(modalDialogId);
-		
+
 			$(targetObject).click(function() {
         disableSelectionIfAlreadySelected();
-        
+
   			$('#' + modalDialogId).modal('show');
 
         // fix to allways show back-shadow
@@ -626,11 +643,11 @@ var ComboAutoBox = {
         // alert($('.modal-backdrop').css('z-index'));
         // alert($('.modal').css('z-index'));
 			});
-      
+
       $('div#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-footer > button.selectAll').click(function() {
         selectAllData(container, modalDialogId);
       });
-      
+
       $('#' + modalDialogId).on('hide.bs.modal', function (e) {
         if (options.onHideModal != null) {
           options.onHideModal();
@@ -643,19 +660,19 @@ var ComboAutoBox = {
         }
       });
 		};
-	
+
 		// Selects an item form modal dialog when clicked on
 		var selectValueFromModalDialog = function (value) {
 			$('#' + container + ' > div.container-combo-auto-box > input').val(value);
 			selectData(value);
 		};
-	
+
 		// generates list for modal dialog
 		var getListForModalDialog = function (modalDialogId) {
 			if (typeof options.source == 'string') {
 				var term = 'term=';
 				var params = (options.data == null) ? term : options.data + '&' + term;
-	
+
 				$.getJSON(options.source + '?' + params, function(data) {
 					setListForModalDialog(modalDialogId, data);
 				});
@@ -663,7 +680,7 @@ var ComboAutoBox = {
 				setListForModalDialog(modalDialogId, options.source);
 			}
 		};
-	
+
 		// set list for modal dialog
 		var setListForModalDialog = function (modalDialogId, data) {
 			if (options.bootstrap) {
@@ -675,7 +692,7 @@ var ComboAutoBox = {
 
 		var setListForSimpleModalDialog = function (modalDialogId, data) {
 			var items = [];
-		
+
 			$.each(data, function(index){
 				items.push('<li><span class="combo-auto-box-item-id">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></li>');
 			});
@@ -689,9 +706,9 @@ var ComboAutoBox = {
 
 				var thisId = $(this).children('span.combo-auto-box-item-id').text();
 				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
-			
+
 				$('#' + modalDialogId).dialog('close');
-			
+
 				if (options.type == 'simple') {
 					$('#' + container + ' > div.container-combo-auto-box > input').val(thisLabel);
 					selectData(thisId, thisLabel);
@@ -701,14 +718,14 @@ var ComboAutoBox = {
 					$('#' + container + ' > div.container-combo-auto-box > input[type="text"]').focus();
 					selectData(thisId, thisLabel);
 				}
-			});			
+			});
 		};
 
-		var setListForBootstrapModalDialog = function (modalDialogId, data) {		
+		var setListForBootstrapModalDialog = function (modalDialogId, data) {
 			var items = [];
-		
+
 			$.each(data, function(index){
-  			items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');          
+  			items.push('<a href="javascript:void(0);" class="list-group-item"><span class="combo-auto-box-item-id" style="display:none;">' + data[index].id +'</span><span class="combo-auto-box-item-label">'+ data[index].label + '</span></a>');
 			});
 
 			$('#' + modalDialogId + ' > div.modal-dialog > div.modal-content > div.modal-body > div.list-group').html(items.join(''));
@@ -716,10 +733,10 @@ var ComboAutoBox = {
         if ($(this).hasClass('selected')) {
           return false;
         }
-        
+
 				var thisId = $(this).children('span.combo-auto-box-item-id').text();
 				var thisLabel = $(this).children('span.combo-auto-box-item-label').text();
-			
+
 				if (options.type == 'simple') {
 					$('#' + container + ' > div.container-combo-auto-box-bootstrap > input').val(thisLabel);
 					selectData(thisId, thisLabel);
@@ -729,49 +746,49 @@ var ComboAutoBox = {
 					$('#' + container + ' > div.container-combo-auto-box-bootstrap > input[type="text"]').focus();
 					selectData(thisId, thisLabel);
 				}
-				
+
 				$('#' + modalDialogId).modal('hide');
-				
-			});			
+
+			});
 		};
-	
+
 		// opens modal dialog
 		var openModalDialog = function (modalDialogId) {
 			$('#' + modalDialogId).dialog("open");
 		};
-	
+
 		// starting generate modial dialog
 		var generateModalDialog = function (textField) {
       options['modalId'] = generateAnId('model-dialog')
 			if (options.bootstrap) {
 				if (options.type == 'simple') {
-					$(generateExpander()).appendTo('#' + container + ' > div.container-combo-auto-box-bootstrap');					
+					$(generateExpander()).appendTo('#' + container + ' > div.container-combo-auto-box-bootstrap');
 				} else {
-					$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box-bootstrap');					
+					$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box-bootstrap');
 				}
 				generateBootstrapDialogModal(options['modalId']);
 			} else {
 				$(generateExpander()).prependTo('#' + container + ' > div.container-combo-auto-box');
-				adjustExpanderImage();				
+				adjustExpanderImage();
 				generateDivDialogModal(options['modalId']);
 			}
-	
+
 		};
-	
+
 		// add multiple item
 		var addMultipleItem = function (inputId, selectedId, selectedData) {
       var targetId = (options.html.name + selectedId).replace(/[^A-Za-z0-9]/g, '_');
 			if ((selectedData != '') && ($('#' + targetId).length == 0)) {
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'[]" value="'+ htmlSafe(selectedId.toString()) +'" id=' + targetId + '></div>');
-	
+
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
 					unselectData(selectedId, selectedData);
 				});
 			}
 		};
-	
+
 		// remove multiple item
 		var removeLastMultipleItem = function () {
 			if ($('#' + container + ' > div.multiple > div.item').length > 0) {
@@ -781,7 +798,7 @@ var ComboAutoBox = {
 				unselectData(value, label);
 			}
 		};
-	
+
 		// add searchable item for ransack
 		var addSearchableItemForRansack = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
@@ -795,14 +812,14 @@ var ComboAutoBox = {
 				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'">';
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
-	
+
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
 					unselectData(selectedId, selectedData);
 				});
 			}
 		};
-		
+
 		var removeLastSearchableItemForRansack = function() {
 			if ($('#' + container + ' > div.searchable > div.item').length > 0) {
 				var label = $('#' + container + ' > div.searchable > div.item:last > input[name*="value"]').val();
@@ -810,23 +827,23 @@ var ComboAutoBox = {
 				var condition = $('#' + container + ' > div.searchable > div.item:last > input[name*="p"]').val();
 				$('#' + container + ' > div.searchable > div.item:last').remove();
 				unselectData(attribute + "_" + condition, label);
-			}			
+			}
 		}
-	
+
 		// add searchable item
-		var addSearchableItem = function (inputId, selectedId, selectedData) {			
+		var addSearchableItem = function (inputId, selectedId, selectedData) {
 			if (selectedData != '') {
 				var id = generateAnId('item');
 				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span title="Remove Item">x</span><input type="hidden" name="'+ options.html.name +'['+ htmlSafe(selectedId.toString()) +'][]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'"></div>');
-	
+
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
 					unselectData(selectedId, selectedData);
 				});
-	
+
 			}
 		};
-				
+
 		// return json with attribute and condition
 		var getSearchablePredicate = function (selectedId) {
 			var fields = $.map(options.source, function(val, i) { return val['id']}).join('|');
@@ -836,7 +853,7 @@ var ComboAutoBox = {
 			var full = getSearchableLabelForAttributeId(matched[1]) + ' ' + getSearchableLabelForConditionId(matched[2]);
 			return { attribute: matched[1], condition: matched[2], full: full };
 		}
-	
+
 		// get only the value from selected Data
 		var getSearchableValue = function (selectedData) {
 			var fields = $.map(options.source, function(val, i) { return val['label']}).join('|');
@@ -848,7 +865,7 @@ var ComboAutoBox = {
 				return null;
 			}
 		}
-		
+
 		var getSearchableLabelForAttributeId = function (attibuteId) {
 			for(var i=0; i<options.source.length;i++) {
 				if (options.source[i]['id'] == attibuteId) {
@@ -865,7 +882,7 @@ var ComboAutoBox = {
 				}
 			}
 		}
-		
+
 		var htmlSafe = function(html) {
 			html = html.replace(/\&/g, '&amp;');
 			html = html.replace(/\</g, '&lt;');
@@ -873,26 +890,26 @@ var ComboAutoBox = {
 			html = html.replace(/\"/g, '&quot;');
 			html = html.replace(/\'/g, '&#x27;');
 			html = html.replace(/\//g, '&#x2F;');
-			
+
 			return html;
 		}
-    
+
 		//  Bind click on div for multiple or searchble
 		var bindContainerClick = function(inputId) {
 			$('#' + container + ' > div.multiple').click(function() {
 				$('#' + inputId).focus();
-			});			
-	
+			});
+
 			$('#' + container + ' > div.searchable').click(function() {
 				$('#' + inputId).focus();
-			});			
+			});
 		};
-		
+
 		var normalizeStyles = function(inputId) {
 			$('#' + container).css('background-color', $('#' + inputId).css('background-color'));
 			$('#' + inputId).css('border', '0px');
 		}
-			
+
 		// on select data
 		var selectData = function (selectedId, selectedLabel) {
 			if (options.complete != null) {
@@ -902,14 +919,14 @@ var ComboAutoBox = {
 			}
 
 		};
-		
+
 		// on unselect data
 		var unselectData = function (selectedId, selectedLabel) {
 			if (options.unselect != null) {
 				options.unselect(selectedId, selectedLabel);
 			}
 		};
-	
+
 		// valid language or set 'en' as default
 		var validLanguage = function () {
 			var langs = ['math', 'en', 'pt-br', 'pt', 'es', 'fr', 'it'];
@@ -919,14 +936,14 @@ var ComboAutoBox = {
 					  return true;
 				  }
         } catch (error) {
-          
+
         }
 			}
-		
+
 			options.lang = 'en';
 			return true;
 		};
-	
+
 		// valid language or set 'en' as default
 		var validType = function () {
 			var types = ['simple', 'full', 'multiple', 'searchable'];
@@ -935,16 +952,16 @@ var ComboAutoBox = {
 					return true;
 				}
 			}
-		
+
 			options.type = 'simple';
 			return true;
 		};
-	
+
 		// valid sources for only and except
 		var validSource = function (source) {
 			operators = i18nMath('math');
 			validIndexes = new Array();
-		
+
 			if (((source['only'] != null) && (source['except'] != null)) || ((source['only'] == null) && (source['except'] == null))) {
 				for(var i=0; i<operators.length;i++) {
 					validIndexes.push(i);
@@ -954,7 +971,7 @@ var ComboAutoBox = {
 					if ((source['only'].indexOf(operators[i]['id']) + source['only'].indexOf(operators[i]['label'])) >= -1) {
 						validIndexes.push(i);
 					}
-				}				
+				}
 			} else if (source['except'] != null) {
 				for(var i=0; i<operators.length;i++) {
 					if ((source['except'].indexOf(operators[i]['id']) + source['except'].indexOf(operators[i]['label'])) == -2) {
@@ -962,10 +979,10 @@ var ComboAutoBox = {
 					}
 				}
 			}
-		
+
 			return validIndexes;
 		}
-		
+
 		var handleMultipleInitials = function() {
 			if (options.initials != null) {
 				$.each(options.initials, function(index) {
@@ -981,13 +998,13 @@ var ComboAutoBox = {
 				});
 			}
 		}
-		
+
 		var getSourceNotFound = function(value) {
 			var pattern = new RegExp('^"(' + value + ')"', 'i');
 			var matched = value.match(pattern);
 			return matched[1];
 		}
-    
+
     var selectAllData = function(container, modalDialogId) {
       var inputId = $('#' + container + ' > div.container-combo-auto-box > input').attr('id');
       if (options.bootstrap) {
@@ -996,7 +1013,7 @@ var ComboAutoBox = {
       } else {
         $('#' + modalDialogId).dialog('close');
       }
-      
+
 			$.each(options.source, function( index, value ){
         selectData(value.id, value.label);
         addMultipleItem(inputId, value.id, value.label);
@@ -1004,12 +1021,12 @@ var ComboAutoBox = {
     }
 
 		validLanguage();
-	
+
 		// main
 		if (options == null) {
 			options = {};
 		}
-		
+
 		options.source_not_found = false;
 
 		if (options.not_found_message == null) {
@@ -1019,34 +1036,34 @@ var ComboAutoBox = {
 		if (options.not_found_accepted == null) {
 			options.not_found_accepted = false;
 		}
-	
+
 		if (options.bootstrap == null) {
 			options.bootstrap = false;
 		}
-	
+
 		if (options.style == null) {
 			options.style = "mail";
 		}
-	
+
 		if (options.email == null) {
 			options.email = false
 		}
-	
+
 		validType();
-	
+
 		$('#' + container).html(generateDivTag());
-	
+
 		if (options.bootstrap) {
 			textField = $('#' + container + ' > div.container-combo-auto-box-bootstrap > input');
 		} else {
 			textField = $('#' + container + ' > div.container-combo-auto-box > input');
 		}
 		bindAutoComplete(textField.attr('id'));
-	
+
 		if (options.type == 'simple') {
 			generateModalDialog(textField);
 		}
-		
+
 		if (options.type == 'multiple') {
 			generateModalDialog(textField);
 			bindContainerClick(textField.attr('id'));
@@ -1062,4 +1079,3 @@ var ComboAutoBox = {
 
 	}
 }
-
