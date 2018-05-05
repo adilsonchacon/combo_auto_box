@@ -35,6 +35,7 @@ var ComboAutoBox = {
 
       $('#' + inputId).autocomplete( "close" );
       if ((options.source_not_found) && (!options.not_found_accepted)) {
+        dataNotFound($('#' + inputId).val());
         selectData('', '');
       } else {
         for (var i = 0; i < emails.length; i++) {
@@ -58,6 +59,7 @@ var ComboAutoBox = {
 						removeLastSearchableItemForRansack();
 					}
 				} else if ((e.keyCode == 9) && (inputVal != '') && (options.source_not_found) && (options.type == 'simple')) {
+          dataNotFound($('#' + inputId).val());
 					$('#' + inputId).autocomplete( "close");
 					if (!options.not_found_accepted) {
 						$('#' + inputId).val('');
@@ -65,6 +67,7 @@ var ComboAutoBox = {
 					selectData($('#' + inputId).val(), $('#' + inputId).val());
 					return true;
 				} else if ((e.keyCode == 9) && (inputVal != '') && (options.source_not_found) && (options.type == 'multiple')) {
+          dataNotFound($('#' + inputId).val());
 					$('#' + inputId).autocomplete( "close");
 					var inputVal = $('#' + inputId).val().replace(/\t$/, '');
 					if (options.not_found_accepted) {
@@ -93,6 +96,7 @@ var ComboAutoBox = {
 				if (((e.which === 32) || (e.which === 44) || (e.which === 59)) && (options.type == 'multiple') && (options.email) && ($('#' + inputId).val().match(/[^@\s]+@([^@\s]+\.)+[^@\s]+/))) {
 					$('#' + inputId).autocomplete( "close" );
 					if ((options.source_not_found) && (!options.not_found_accepted)) {
+            dataNotFound($('#' + inputId).val());
 						$('#' + inputId).val('');
 					} else {
 						addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
@@ -108,6 +112,7 @@ var ComboAutoBox = {
 						$('#' + inputId).autocomplete( "close" );
 						selectData($('#' + inputId).val(), $('#' + inputId).val());
 					} else if ((options.source_not_found) && (options.type == 'simple')) {
+            dataNotFound($('#' + inputId).val());
 						$('#' + inputId).autocomplete( "close");
 						if (!options.not_found_accepted) {
 							$('#' + inputId).val('');
@@ -116,6 +121,7 @@ var ComboAutoBox = {
 					} else if (options.type == 'multiple') {
 						$('#' + inputId).autocomplete( "close" );
 						if ((options.source_not_found) && (!options.not_found_accepted)) {
+              dataNotFound($('#' + inputId).val());
 							$('#' + inputId).val('');
 						} else {
 							addMultipleItem(inputId, $('#' + inputId).val(), $('#' + inputId).val());
@@ -141,39 +147,46 @@ var ComboAutoBox = {
 			});
 
 			$('#' + inputId).autocomplete({
-				source: setAutoCompleteSource(inputId),
-				select: function(event, ui) {
-				    if ((options.source_not_found) && (options.type == 'simple')) {
+        source: setAutoCompleteSource(inputId),
+        select: function(event, ui) {
+				  if ((options.source_not_found) && (options.type == 'simple')) {
+            dataNotFound($('#' + inputId).val());
 						if (!options.not_found_accepted) {
 							$('#' + inputId).val('');
 						}
-						selectData($('#' + inputId).val(), $('#' + inputId).val());
+            selectData($('#' + inputId).val(), $('#' + inputId).val());
 						return false;
-				    } if ((options.source_not_found) && (options.type == 'multiple')) {
-						var inputVal = $('#' + inputId).val();
-						$('#' + inputId).val('');
-						if (options.not_found_accepted) {
-							addMultipleItem(inputId, inputVal, inputVal);
+          } 
+            
+          if ((options.source_not_found) && (options.type == 'multiple')) {
+            var inputVal = $('#' + inputId).val();
+
+            dataNotFound(inputVal);
+
+            $('#' + inputId).val('');
+					  if (options.not_found_accepted) {
+						  addMultipleItem(inputId, inputVal, inputVal);
 						} else {
 							inputVal = '';
 						}
-						selectData(inputVal, inputVal);
-						return false;
-					} else if (options.type == 'simple') {
-						return selectData(ui.item.id, ui.item.label);
-					} else if (options.type == 'full') {
-						return selectData($('#' + inputId).val(), $('#' + inputId).val());
-					} else if (options.type == 'multiple') {
-						$('#' + inputId).val('');
-						addMultipleItem(inputId, ui.item.id, ui.item.label);
-						selectData(ui.item.id, ui.item.label);
-						return false;
-					} else if (options.type == 'searchable') {
-						$('#' + inputId).val('');
-						addSearchableItemForRansack(inputId, ui.item.id, ui.item.label);
-						selectData(ui.item.id, ui.item.label);
-						return false;
-					}
+              
+					  selectData(inputVal, inputVal);
+					  return false;
+          } else if (options.type == 'simple') {
+            return selectData(ui.item.id, ui.item.label);
+          } else if (options.type == 'full') {
+            return selectData($('#' + inputId).val(), $('#' + inputId).val());
+          } else if (options.type == 'multiple') {
+            $('#' + inputId).val('');
+            addMultipleItem(inputId, ui.item.id, ui.item.label);
+            selectData(ui.item.id, ui.item.label);
+            return false;
+          } else if (options.type == 'searchable') {
+            $('#' + inputId).val('');
+            addSearchableItemForRansack(inputId, ui.item.id, ui.item.label);
+            selectData(ui.item.id, ui.item.label);
+            return false;
+          }
 				},
 				search: function(event, ui) {
 					if (options.type == 'searchable') {
@@ -908,6 +921,13 @@ var ComboAutoBox = {
 		var unselectData = function (selectedId, selectedLabel) {
 			if (options.unselect != null) {
 				options.unselect(selectedId, selectedLabel);
+			}
+		};
+
+		// on data not found
+		var dataNotFound = function (selectedLabel) {
+			if (options.notFound != null) {
+				options.notFound(selectedLabel);
 			}
 		};
 
