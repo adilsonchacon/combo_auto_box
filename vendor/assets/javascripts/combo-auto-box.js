@@ -794,9 +794,29 @@ var ComboAutoBox = {
 				unselectData(value, label);
 			}
 		};
+    
+    var fixItemSize = function (id) {
+      text = $('div#' + id + " i").text();
+
+      while($('div#' + id + " i").width() > ($('div#' + id).parent().width() - 50)) {
+        text = text.substring(0, text.length - 5) + '...';
+				$('div#' + id + " i").text(htmlSafe(text));
+      }      
+    }
+    
+    var fixItemSizeOnResize = function () {
+      try {
+        $('#searchable-clients > div.searchable > div.item').each(function(index) {
+          fixItemSize($(this).attr('id'));
+        });
+      } catch (error) {
+        
+      }
+    }
 
 		// add searchable item for ransack
 		var addSearchableItemForRansack = function (inputId, selectedId, selectedData) {
+      var auxText = '';
 			if (selectedData != '') {
 				var ransackId = generateShortId('r');
 				predicate = getSearchablePredicate(selectedId);
@@ -807,7 +827,9 @@ var ComboAutoBox = {
 				fieldCondition = '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][p]"           value="'+ predicate['condition'] +'">';
 				fieldValue =     '<input type="hidden" name="q[g]['+ predicate['attribute'] +'][c]['+ ransackId +'][v][0][value]" value="'+ htmlSafe(getSearchableValue(selectedData)) +'">';
 				var id = generateAnId('item');
-				$('#' + inputId).before('<div class="item" id="' + id + '">'+ htmlSafe(selectedData) +'<span class="remove_item" title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
+				$('#' + inputId).before('<div class="item" id="' + id + '"><i>'+ htmlSafe(selectedData) +'</i><span class="remove_item" title="Remove Item">x</span>'+ fieldAttribute + fieldCondition + fieldValue +'</div>');
+
+        fixItemSize(id);
 
 				$('#' + id + ' > span').click(function() {
 					$(this).parent().remove();
@@ -1080,6 +1102,11 @@ var ComboAutoBox = {
 			normalizeStyles(textField.attr('id'));
 			handleSearchbleInitials();
 		}
+    
+    $( window ).resize(function() {
+      fixItemSizeOnResize();
+    });
+    
 
 	}
 }

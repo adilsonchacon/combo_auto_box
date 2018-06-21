@@ -16,11 +16,11 @@ div.multiple div.item span:hover { color:#6D6D6D; cursor:pointer; }
 div.multiple input { border: 0px; float:left; min-height:22px; font-size:13px; margin-top:5px; margin-left:11px; }
 div.multiple input:focus { outline:none; }
   
-div.searchable { border: 1px solid #CDCDCD; display:table; width:100%; padding: 2px 6px; }
+div.searchable { border: 1px solid #CDCDCD; display:flex; flex-wrap: wrap; width:100%; padding: 2px 6px; }
 div.searchable:hover {cursor:text}
-div.searchable input { border: 0px; float:left; min-height:22px; font-size:15px; margin-top:2px; }
+div.searchable input { border: 0px; float:left; min-height:22px; font-size:15px; margin-top:2px; max-width: 100%; display:inline; }
 div.searchable input:focus { outline:none; }
-div.searchable div.item { font-family: inherit; float:left; font-size: 15px; color:#FFFFFF; background-color:#008000; margin: 2px 8px 3px 4px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; font-weight:bold; }
+div.searchable div.item { font-family: inherit; float:left; font-size: 15px; color:#FFFFFF; background-color:#008000; margin: 2px 8px 3px 4px; padding:2px 10px 2px 10px; border-radius: .25em; vertical-align: baseline; display:inline; white-space: nowrap; font-weight:bold; max-width: 100%; white-space: nowrap;  overflow: hidden;  text-overflow: ellipsis; }
 div.searchable div.item:hover { cursor:default; }
 div.searchable div.item span { margin-left:10px; color:#CCCCCC; }
 div.searchable div.item span.remove_item { font-weight:none; color:#AAAAAA;}
